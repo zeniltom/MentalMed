@@ -1,0 +1,242 @@
+<resources>
+    <string name="app_name">MentalMed</string>
+
+    <string name="spinneridade">Escolha uma linguagem</string>
+    <string name="raca">Informe a Raça</string>
+    <string name="mentalmed">MentalMed</string>
+    <string name="saudacao">Olá, seja bem vindo! Conte-nos como se sente</string>
+    <string name="cadastre_se">Cadastre-se</string>
+    <string name="saudacao_2">É um prazer conhecê-lo(a)! Como você está ?</string>
+    <string name="comecar_questionario">Começar questionário</string>
+    <string name="proximo">Próximo</string>
+    <string name="nao">Não</string>
+    <string name="sim">Sim</string>
+    <string name="sem_companheiro">Sem companheiro</string>
+    <string name="com_companheiro">Com companheiro</string>
+    <string name="situacao_conjugal">Situação Conjugal:</string>
+    <string name="homem">Homem</string>
+    <string name="mulher">Mulher</string>
+    <string name="avancar">Avançar</string>
+
+    <string-array name="perguntas">
+        <item>01) Você têm dores de cabeça fequente?</item>
+        <item>02) Tem falta de apetite?</item>
+        <item>03) Dorme mal?</item>
+        <item>04) Assusta-se com facilidade?</item>
+        <item>05) Têm tremores nas mãos?</item>
+        <item>06) Sente-se nervoso(a), tenso(a) ou preocupado(a)?</item>
+        <item>07) Tem má digestão?</item>
+        <item>08) Têm dificuldades de pensar com clareza?</item>
+        <item>09) Tem se sentido triste ultimamente?</item>
+        <item>10) Têm chorado mais do que costume?</item>
+        <item>11) Encontra dificuldades para realizar atividades diárias?</item>
+        <item>12) Têm dificuldades para tomar decisões?</item>
+        <item>13) Têm dificuldades no serviço?</item>
+        <item>14) É incapaz de desempenhar um papel útil em sua vida?</item>
+        <item>15) Têm perdido o interesse pelas coisas?</item>
+        <item>16) Você se sente uma pessoa inútil, sem préstimo?</item>
+        <item>17) Tem tido idéia de acabar com a vida?</item>
+        <item>18) Sente-se cansado (a) o tempo todo?</item>
+        <item>19) Você se cansa com facilidade?</item>
+        <item>20) Têm sensações desagradáveis no estomago?</item>
+    </string-array>
+
+    <string-array name="perguntas_ansiedade">
+        <item>01) Dormência ou formigamento</item>
+        <item>02) Sensações de calor</item>
+        <item>03) Tremor nas pernas</item>
+        <item>04) Incapaz de relaxar</item>
+        <item>05) Medo de acontecimentos ruins</item>
+        <item>06) Confuso ou delirante</item>
+        <item>07) Coração batendo forte e rápido</item>
+        <item>08) Inseguro(a)</item>
+        <item>09) Apavorado(a)</item>
+        <item>10) Nervoso(a)</item>
+        <item>11) Sensação de sufocamento</item>
+        <item>12) Tremor nas mãos</item>
+        <item>13) Trêmulo</item>
+        <item>14) Medo de perder o controle</item>
+        <item>15) Dificuldade de respirar</item>
+        <item>16) Medo de morrer</item>
+        <item>17) Assustado(a)</item>
+        <item>18) Indigestão ou desconforto adbominal</item>
+        <item>19) Desmaios</item>
+        <item>20) Rubor facial</item>
+        <item>20) Sudorene (não devido ao calor)</item>
+    </string-array>
+
+    <string-array name="perguntas_depressao_cat">
+        <item>1. </item>
+        <item>2. </item>
+        <item>3. </item>
+        <item>4. </item>
+        <item>5. </item>
+        <item>6. </item>
+        <item>7. </item>
+        <item>8. </item>
+        <item>9. </item>
+        <item>10. </item>
+        <item>11. </item>
+        <item>12. </item>
+        <item>13. </item>
+        <item>14. </item>
+        <item>15. </item>
+        <item>16. </item>
+        <item>17. </item>
+        <item>18. </item>
+        <item>19. </item>
+        <item>20. </item>
+        <item>21. </item>
+    </string-array>
+
+    <string-array name="perguntas_depressao">
+        <item>0 = não me sinto triste</item>
+        <item>1 = sinto-me triste</item>
+        <item>2 = sinto-me triste o tempo todo e não consigo sair disto</item>
+        <item>3 = estou tão triste e infeliz que não posso aguentar</item>
+
+        <item>0 = não estou particularmente desencorajado(a) frente ao futuro</item>
+        <item>1 = sinto-me desencorajado(a) frente ao futuro</item>
+        <item>2 = sinto que não tenho nada por que esperar</item>
+        <item>3 = sinto que o futuro é sem esperança e que as coisas não vão melhorar</item>
+
+        <item>O = não me sinto fracassado(a)</item>
+        <item>1 = sinto que falhei mais do que um indivíduo médio</item>
+        <item>2 = quando olho para trás em minha vida, só vejo uma porção de fracassos</item>
+        <item>3 = sinto que sou um fracasso completo como pessoa</item>
+
+        <item>0 = não obtenho tanta satisfação com as coisas como costumava fazer</item>
+        <item>1 = não gosto das coisas da maneira como costumava gostar</item>
+        <item>2 = não consigo mais sentir satisfação real com coisa alguma</item>
+        <item>3 = estou insatisfeito(a) ou entediado(a) com tudo</item>
+
+        <item>5. O = não me sinto particularmente culpado(a)</item>
+        <item>1 = sinto-me culpado(a) boa parte do tempo</item>
+        <item>2 = sinto-me muito culpado(a) a maior parte do tempo</item>
+        <item>3 = sinto-me culpado(a) o tempo todo</item>
+
+        <item>6. 0 = não sinto que esteja sendo punido(a)</item>
+        <item>1 = sinto que posso ser punido(a)</item>
+        <item>2 = espero ser punido(a)</item>
+        <item>3 = sinto que estou sendo punido(a)</item>
+
+        <item>7. O = não me sinto desapontad❑(a) comigo mesmo(a)</item>
+        <item>1 = sinto-me desapontado(a) comigo mesmo(a)</item>
+        <item>2 = sinto-me aborrecido(a) comigo mesmo(a)</item>
+        <item>3 = eu me odeio</item>
+
+        <item>8. 0 = não sinto que seja pior que qualquer pessoa</item>
+        <item>1 = critico minhas fraquezas ou erros</item>
+        <item>2 = responsabilizo-me ❑ tempo todo por minhas falhas</item>
+        <item>3 = culpo-me por todas as coisas ruins que acontecem</item>
+
+        <item>9. 0 = não tenho nenhum pensamento a respeito de me matar</item>
+        <item>1 = tenho pensamentos a respeito de me matar mas não os levaria adiante</item>
+        <item>2 = gostaria de me matar</item>
+        <item>3 = eu me mataria se tivesse uma oportunidade</item>
+
+        <item>10.0 = não costumo chorar mais do que o habitual</item>
+        <item>1 = choro mais agora do que costumava chorar antes</item>
+        <item>2 = atualmente choro o tempo todo</item>
+        <item>3 = eu costumava chorar, mas agora não consigo mesmo que queira</item>
+
+        <item>11. O = não me irrito mais agora do que em qualquer outra época</item>
+        <item>1 = fico molestado(a) ou irritado(a) mais facilmente do que costumava</item>
+        <item>2 = atualmente sinto-me irritado(a) o tempo todo</item>
+        <item>3 = absolutamente não me irrito com as coisas que costumam irritar-me</item>
+
+        <item>12. O = não perdi o Interesse nas outras pessoas</item>
+        <item>1 = interesso-me menos do que costumava pelas outras pessoas</item>
+        <item>2 = perdi a maior parle do meu interesse pelas outras pessoas</item>
+        <item>3 = perdi todo o meu interesse nas outras pessoas</item>
+
+        <item>13. O = tomo as decisões quase tão bem como em qualquer outra época</item>
+        <item>1 = adio minhas decisões mais do que costumava</item>
+        <item>2 = tenho maior dificuldade em tomar decisões do que antes</item>
+        <item>3 = não consigo mais tomar decisões</item>
+
+        <item>14. 0 = não sinto que minha aparência seja pior do que costumava ser</item>
+        <item>1 = preocupo-me por estar parecendo velho(a) ou sem atrativos</item>
+        <item>2 = sinto que há mudanças em minha aparência que me fazem parecer sem atrativos</item>
+        <item>3 considero-me feio(a)</item>
+
+        <item>15. O posso trabalhar mais ou meros tão bem quanto antes</item>
+        <item>1 = preciso de um esforço extra para começar qualquer coisa</item>
+        <item>2 = tenho que me esforçar muito até fazer qualquer coisa</item>
+        <item>3 = não consigo fazer trabalho nenhum</item>
+
+        <item>16. O = durmo tão bem quanto de habito</item>
+        <item>1 = não durmo tão bem quanto costumava</item>
+        <item>2 = acordo 1 ou 2 horas mais cedo do que de hábito e tenho dificuldade de voltar a dormir</item>
+        <item>3 = acordo várias horas mais cedo do que costumava e tenho dificuldade de voltar a dormir</item>
+
+        <item>17 O = não fico mais cansado(a) do que de hábito</item>
+        <item>1 = fico cansado(a) com mais facilidade do que costumava</item>
+        <item>2 = sinto-me cansado(a) ao fazer qualquer coisa</item>
+        <item>3 = estou cansado(a) demais para fazer qualquer coisa</item>
+
+        <item>18. O = o meu apetite não está pior do que de hábito</item>
+        <item>1 = meu apetite não é tão bom como costumava ser</item>
+        <item>2 = meu apetite está muito pior agora</item>
+        <item>3 = não tenho mais nenhum apetite</item>
+
+        <item>19. O = não perdi muito peso se é que perdi algum ultimamente</item>
+        <item>1 = perdi mais de 2,5 kg estou deliberadamente</item>
+        <item>2 = perdi mais de 5,0 kg tentando perder peso</item>
+        <item>3 = perdi mais de 7,0 kg comendo menos</item>
+
+        <item>20. 0 = não me preocupo mais do que de hábito com minha saúde</item>
+        <item>1 = preocupo-me com problemas físicos como dores e aflições, ou perturbações no estômago, ou prisões de ventre</item>
+        <item>2 = estou preocupado(a) com problemas físicos e é difícil pensar em muito mais do que isso</item>
+        <item>3 = estou tão preocupado(a) em ter problemas físicos que não consigo pensar em outra coisa</item>
+
+        <item>21. 0 = não tenho observado qualquer mudança recente em meu interesse sexual</item>
+        <item>1 = estou menos interessado(a) por sexo do que acostumava</item>
+        <item>2 = estou bem menos interessado(a) por sexo atualmente</item>
+        <item>3 = perdi completamente o interesse por sexo</item>
+    </string-array>
+
+    <string-array name="perguntas_sindrome_burnout">
+        <item>Exaustão emocional</item>
+        <item>01) Os meus estudos deixam-me emocionalmente esgotado.</item>
+        <item>02) Sinto-me cansado ao final de um dia na universidade.</item>
+        <item>03) Sinto-me cansado quando acordo pela manhã e, tenho que enfrentrar outro dia de aula.</item>
+        <item>04) Estudar ou frequentar as aulas deixam-me tenso.</item>
+        <item>05) Os meus estudos deixam-me completamente esgotado.</item>
+        <item>Descrença</item>
+        <item>01) Tenho me tornado menos interessado nos estudos desde que entrei nesta universidade.</item>
+        <item>02) Sinto-me pouco entusiasmado com os meus estudos.</item>
+        <item>03) Tenho me sentido descrente do meu potencial e da utilidade dos meus estudos.</item>
+        <item>04) Tenho dúvidas sobre o sentido e a importância dos meus estudos.</item>
+        <item>Eficácia profissional</item>
+        <item>01) Posso resolver, de forma eficaz, os problemas que surgem nos meus estudos.</item>
+        <item>02) Acredito que participo, de forma eficaz, nas aulas a que frequento.</item>
+        <item>03) Considero-me um bom estudante.</item>
+        <item>04) Sinto-me estimulado quando concluo com êxito a minha meta de estudos.</item>
+        <item>05) Tenho aprendido muitas coisas interessantes no decorrer dos meus estudos.</item>
+        <item>06) Durante as aulas, sinto-me confiante: realizo as tarefas de modo eficaz.</item>
+    </string-array>
+
+    <string-array name="idade">
+        <item>Selecione</item>
+        <item>15</item>
+        <item>16</item>
+        <item>17</item>
+        <item>18</item>
+        <item>19</item>
+        <item>20</item>
+        <item>21</item>
+        <item>22</item>
+        <item>23</item>
+        <item>24</item>
+        <item>25</item>
+        <item>26</item>
+        <item>27</item>
+        <item>29</item>
+        <item>30</item>
+        <item>31</item>
+        <item>32</item>
+        <item>33</item>
+
+    </string-array>
+</resources>
