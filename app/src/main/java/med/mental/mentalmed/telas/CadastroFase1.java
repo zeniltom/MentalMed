@@ -2,7 +2,6 @@ package med.mental.mentalmed.telas;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -11,7 +10,12 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.firebase.database.DatabaseReference;
+
 import med.mental.mentalmed.R;
+import med.mental.mentalmed.config.ConfiguracaoFirebase;
 import med.mental.mentalmed.model.ENGenero;
 import med.mental.mentalmed.model.ENMoradia;
 import med.mental.mentalmed.model.ENRaca;
@@ -20,6 +24,8 @@ import med.mental.mentalmed.model.Questionario;
 
 
 public class CadastroFase1 extends AppCompatActivity {
+
+    private DatabaseReference reference = ConfiguracaoFirebase.getFirebase();
 
     private EditText et_renda;
 
