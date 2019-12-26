@@ -69,6 +69,7 @@ public class QuestSQR20 extends AppCompatActivity {
                 qtdSim++;
         }
 
-        return qtdSim >= 7;
+        return true;
+        //return qtdSim >= 7;
     }
 }

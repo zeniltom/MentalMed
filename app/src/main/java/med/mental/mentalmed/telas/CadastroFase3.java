@@ -72,10 +72,10 @@ public class CadastroFase3 extends AppCompatActivity {
     private boolean isValid() {
         boolean resultado = true;
 
-        if (questionario.getHorasLazerSemanalmente() == 0) {
-            msg();
-            resultado = false;
-        }
+//        if (questionario.getHorasLazerSemanalmente() == 0) {
+//            msg();
+//            resultado = false;
+//        }
 
         return resultado;
     }

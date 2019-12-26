@@ -57,16 +57,16 @@ public class CadastroFase2 extends AppCompatActivity {
     private boolean isValid() {
         boolean resultado = true;
 
-        if (questionario.getSemestreInicioGraduacao() == 0) {
-            msg("Prencha o semestre que iniciou a graduação");
-            resultado = false;
-        } else if (questionario.getPeriodoAtual() == 0) {
-            msg("Prencha o período atual da sua graduação");
-            resultado = false;
-        } else if (questionario.getHorasEstudoDiarios() == 0) {
-            msg("Informe a quantidade de horas que estuda diariamente");
-            resultado = false;
-        }
+//        if (questionario.getSemestreInicioGraduacao() == 0) {
+//            msg("Prencha o semestre que iniciou a graduação");
+//            resultado = false;
+//        } else if (questionario.getPeriodoAtual() == 0) {
+//            msg("Prencha o período atual da sua graduação");
+//            resultado = false;
+//        } else if (questionario.getHorasEstudoDiarios() == 0) {
+//            msg("Informe a quantidade de horas que estuda diariamente");
+//            resultado = false;
+//        }
 
         return resultado;
     }

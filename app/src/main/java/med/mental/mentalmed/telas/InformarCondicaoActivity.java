@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.TextView;
 
+import java.util.HashMap;
 import java.util.List;
 
 import med.mental.mentalmed.R;
@@ -26,8 +27,7 @@ public class InformarCondicaoActivity extends AppCompatActivity {
     private int resultadosAnsiedade;
     private String nivelDepressao;
     private int resultadosDepressao;
-    private String nivelSindromeB;
-    private int resultadosSindromeB;
+    HashMap<String, Float> resultadosSindromeB;
 
 
     @Override
@@ -39,6 +39,7 @@ public class InformarCondicaoActivity extends AppCompatActivity {
         resultadosSQR20 = (List<Pergunta>) getIntent().getSerializableExtra("resultadosSQR20");
         resultadosQuestAnsiedade = (List<PerguntaAnsiedade>) getIntent().getSerializableExtra("resultadosQuestAnsiedade");
         resultadosQuestDepressao = (List<PerguntaDepressao>) getIntent().getSerializableExtra("resultadosQuestDepressao");
+        resultadosSindromeB = (HashMap<String, Float>) getIntent().getSerializableExtra("resultadosSindromeB");
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
@@ -46,8 +47,6 @@ public class InformarCondicaoActivity extends AppCompatActivity {
             resultadosAnsiedade = bundle.getInt("resultadosAnsiedade");
             nivelDepressao = bundle.getString("nivelDepressao");
             resultadosDepressao = bundle.getInt("resultadosDepressao");
-            nivelSindromeB = bundle.getString("nivelSindromeB");
-            resultadosSindromeB = bundle.getInt("resultadosSindromeB");
         }
 
         TextView tv_nv_ansiedade = findViewById(R.id.tv_nv_ansiedade);
@@ -56,7 +55,13 @@ public class InformarCondicaoActivity extends AppCompatActivity {
 
         tv_nv_ansiedade.setText(nivelAnsiedade);
         tv_nv_depressao.setText(nivelDepressao);
-        tv_nv_sindrome_b.setText(nivelSindromeB);
+
+        String results = "Exaustão Emocional: " + (resultadosSindromeB.get("exaustaoEmocional") > 3 ? "POSSUE EXAUSTÃO EMOCIONAL" : "NORMAL")
+                + "\n Descrença: " + (resultadosSindromeB.get("descreca") > 3 ? "POSSUE DESCRENÇA" : "NORMAL")
+                + "\n Eficácia Profissional: " + (resultadosSindromeB.get("eficaciaProfissional") < 2 ? "NÃO É EFICIENTE" : "NORMAL");
+
+
+        tv_nv_sindrome_b.setText(results);
 
         Log.i("#NIVEL ANSIEDADE", String.valueOf(resultadosAnsiedade));
         Log.i("#NIVEL DEPRESSAO", String.valueOf(resultadosDepressao));

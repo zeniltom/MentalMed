@@ -29,16 +29,14 @@ public class PerguntaSindromeBurnoutAdapter extends BaseAdapter {
 
         for (int i = 0; i < questionsList.size(); i++) {
             PerguntaBurnout p;
-
             p = questionsList.get(i);
-
             resultados.add(p);
         }
 
         inflater = (LayoutInflater.from(applicationContext));
     }
 
-    @SuppressLint({"ViewHolder", "InflateParams"})
+    @SuppressLint("ViewHolder")
     @Override
     public View getView(final int i, View view, ViewGroup viewGroup) {
         view = inflater.inflate(R.layout.item_pergunta_sindrome, null);
@@ -58,13 +56,13 @@ public class PerguntaSindromeBurnoutAdapter extends BaseAdapter {
         descricao.setText(perguntaBurnout.getDescricao());
 
         //MANTER ESTADO DOS ITENS
-        radio_0.setChecked(perguntaBurnout.isMarcada() && perguntaBurnout.getResposta() == 0);
-        radio_1.setChecked(perguntaBurnout.isMarcada() && perguntaBurnout.getResposta() == 1);
-        radio_2.setChecked(perguntaBurnout.isMarcada() && perguntaBurnout.getResposta() == 2);
-        radio_3.setChecked(perguntaBurnout.isMarcada() && perguntaBurnout.getResposta() == 3);
-        radio_4.setChecked(perguntaBurnout.isMarcada() && perguntaBurnout.getResposta() == 4);
-        radio_5.setChecked(perguntaBurnout.isMarcada() && perguntaBurnout.getResposta() == 5);
-        radio_6.setChecked(perguntaBurnout.isMarcada() && perguntaBurnout.getResposta() == 6);
+        radio_0.setChecked(isAltervativaMarcada(perguntaBurnout, 0));
+        radio_1.setChecked(isAltervativaMarcada(perguntaBurnout, 1));
+        radio_2.setChecked(isAltervativaMarcada(perguntaBurnout, 2));
+        radio_3.setChecked(isAltervativaMarcada(perguntaBurnout, 3));
+        radio_4.setChecked(isAltervativaMarcada(perguntaBurnout, 4));
+        radio_5.setChecked(isAltervativaMarcada(perguntaBurnout, 5));
+        radio_6.setChecked(isAltervativaMarcada(perguntaBurnout, 6));
 
         //MOSTRAR CATEGORIA DA PERGUNTA
         if (i == 0 || i == 6 || i == 11) {
@@ -74,65 +72,28 @@ public class PerguntaSindromeBurnoutAdapter extends BaseAdapter {
             perguntaBurnout.setResposta(99);
         }
 
-        radio_0.setOnCheckedChangeListener((buttonView, isChecked) -> {
-
-            if (isChecked) {
-                perguntaBurnout.setResposta(0);
-                perguntaBurnout.setMarcada(true);
-                resultados.set(i, perguntaBurnout);
-            }
-        });
-
-        radio_1.setOnCheckedChangeListener((buttonView, isChecked) -> {
-
-            if (isChecked) {
-                perguntaBurnout.setResposta(1);
-                perguntaBurnout.setMarcada(true);
-                resultados.set(i, perguntaBurnout);
-            }
-        });
-
-        radio_2.setOnCheckedChangeListener((compoundButton, isChecked) -> {
-            if (isChecked) {
-                perguntaBurnout.setResposta(2);
-                perguntaBurnout.setMarcada(true);
-                resultados.set(i, perguntaBurnout);
-            }
-        });
-
-        radio_3.setOnCheckedChangeListener((compoundButton, isChecked) -> {
-            if (isChecked) {
-                perguntaBurnout.setResposta(3);
-                perguntaBurnout.setMarcada(true);
-                resultados.set(i, perguntaBurnout);
-            }
-        });
-
-        radio_4.setOnCheckedChangeListener((compoundButton, isChecked) -> {
-            if (isChecked) {
-                perguntaBurnout.setResposta(4);
-                perguntaBurnout.setMarcada(true);
-                resultados.set(i, perguntaBurnout);
-            }
-        });
-        radio_5.setOnCheckedChangeListener((compoundButton, isChecked) -> {
-            if (isChecked) {
-                perguntaBurnout.setResposta(5);
-                perguntaBurnout.setMarcada(true);
-                resultados.set(i, perguntaBurnout);
-            }
-        });
-        radio_6.setOnCheckedChangeListener((compoundButton, isChecked) -> {
-            if (isChecked) {
-                perguntaBurnout.setResposta(6);
-                perguntaBurnout.setMarcada(true);
-                resultados.set(i, perguntaBurnout);
-            }
-        });
+        radio_0.setOnCheckedChangeListener((compoundButton, isChecked) -> marcarAlternativa(i, perguntaBurnout, isChecked, 0));
+        radio_1.setOnCheckedChangeListener((compoundButton, isChecked) -> marcarAlternativa(i, perguntaBurnout, isChecked, 1));
+        radio_2.setOnCheckedChangeListener((compoundButton, isChecked) -> marcarAlternativa(i, perguntaBurnout, isChecked, 2));
+        radio_3.setOnCheckedChangeListener((compoundButton, isChecked) -> marcarAlternativa(i, perguntaBurnout, isChecked, 3));
+        radio_4.setOnCheckedChangeListener((compoundButton, isChecked) -> marcarAlternativa(i, perguntaBurnout, isChecked, 4));
+        radio_5.setOnCheckedChangeListener((compoundButton, isChecked) -> marcarAlternativa(i, perguntaBurnout, isChecked, 5));
+        radio_6.setOnCheckedChangeListener((compoundButton, isChecked) -> marcarAlternativa(i, perguntaBurnout, isChecked, 6));
 
         return view;
     }
 
+    private boolean isAltervativaMarcada(PerguntaBurnout perguntaBurnout, int i) {
+        return perguntaBurnout.isMarcada() && perguntaBurnout.getResposta() == i;
+    }
+
+    private void marcarAlternativa(int posicao, PerguntaBurnout perguntaBurnout, boolean isChecked, int valor) {
+        if (isChecked) {
+            perguntaBurnout.setResposta(valor);
+            perguntaBurnout.setMarcada(true);
+            resultados.set(posicao, perguntaBurnout);
+        }
+    }
 
     @Override
     public int getCount() {
