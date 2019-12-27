@@ -16,6 +16,7 @@ import com.google.firebase.database.DatabaseReference;
 
 import med.mental.mentalmed.R;
 import med.mental.mentalmed.config.ConfiguracaoFirebase;
+import med.mental.mentalmed.config.Preferencias;
 import med.mental.mentalmed.model.ENGenero;
 import med.mental.mentalmed.model.ENMoradia;
 import med.mental.mentalmed.model.ENRaca;
@@ -60,29 +61,40 @@ public class CadastroFase1 extends AppCompatActivity {
         if (validarCadastro()) {
             Intent intent = new Intent(this, QuestSQR20.class);
             intent.putExtra("questionario", questionario);
-            startActivity(intent);
+            //startActivity(intent);
+
+            //Salvar no Firebase
+            reference = ConfiguracaoFirebase.getFirebase().child("usuarios");
+            DatabaseReference autoId = reference.push();
+            questionario.setId(autoId.getKey());
+
+            reference.child(questionario.getId()).setValue(questionario);
+
+            //Salvar nas Preferências
+            Preferencias preferencias = new Preferencias(CadastroFase1.this);
+            preferencias.salvarDados(questionario.getId(), questionario);
         }
     }
 
     private boolean validarCadastro() {
         boolean resultado = true;
 
-//        if (questionario.getGenero() == null) {
-//            msg("Escolha seu gênero");
-//            resultado = false;
-//        } else if (questionario.getSexo() == null) {
-//            msg("Escolha seu sexo");
-//            resultado = false;
-//        } else if (questionario.getMoradia() == null) {
-//            msg("Informe com quem mora");
-//            resultado = false;
-//        } else if (questionario.getIdade() == 0) {
-//            msg("Escolha sua idade");
-//            resultado = false;
-//        } else if (questionario.getRaca().equals(ENRaca.SELECINE)) {
-//            msg("Escolha sua raça");
-//            resultado = false;
-//        }
+        if (questionario.getGenero() == null) {
+            msg("Escolha seu gênero");
+            resultado = false;
+        } else if (questionario.getSexo() == null) {
+            msg("Escolha seu sexo");
+            resultado = false;
+        } else if (questionario.getMoradia() == null) {
+            msg("Informe com quem mora");
+            resultado = false;
+        } else if (questionario.getIdade() == 0) {
+            msg("Escolha sua idade");
+            resultado = false;
+        } else if (questionario.getRaca().equals(ENRaca.SELECINE)) {
+            msg("Escolha sua raça");
+            resultado = false;
+        }
 
         return resultado;
     }

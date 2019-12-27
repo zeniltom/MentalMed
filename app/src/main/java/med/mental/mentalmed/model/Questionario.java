@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class Questionario implements Serializable {
 
-    private Long id;
+    private String id;
 
     private int idade;
     private int semestreInicioGraduacao;
@@ -66,11 +66,11 @@ public class Questionario implements Serializable {
                 "\n usaMedicamentoPrescrito = " + usaMedicamentoPrescrito + '}';
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
