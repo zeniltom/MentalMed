@@ -8,10 +8,14 @@ import android.widget.RadioGroup;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.database.DatabaseReference;
+
 import java.io.Serializable;
 import java.util.List;
 
 import med.mental.mentalmed.R;
+import med.mental.mentalmed.config.ConfiguracaoFirebase;
+import med.mental.mentalmed.config.Preferencias;
 import med.mental.mentalmed.model.Pergunta;
 import med.mental.mentalmed.model.PerguntaAnsiedade;
 import med.mental.mentalmed.model.PerguntaDepressao;
@@ -69,6 +73,15 @@ public class CadastroFase4 extends AppCompatActivity {
         intent.putExtra("nivelDepressao", nivelDepressao);
         intent.putExtra("resultadosDepressao", resultadosDepressao);
         startActivity(intent);
+
+        //Salvar no Firebase
+        DatabaseReference referenciaQuestionario = ConfiguracaoFirebase.getFirebase().child("usuarios").child("questionario");
+
+        referenciaQuestionario.child(questionario.getId()).setValue(questionario);
+
+        //Salvar nas Preferências
+        Preferencias preferencias = new Preferencias(CadastroFase4.this);
+        preferencias.salvarDados(questionario.getId(), questionario, null, null, null, null);
     }
 
     private void carregarComponentes() {

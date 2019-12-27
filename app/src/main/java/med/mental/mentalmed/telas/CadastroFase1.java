@@ -26,8 +26,6 @@ import med.mental.mentalmed.model.Questionario;
 
 public class CadastroFase1 extends AppCompatActivity {
 
-    private DatabaseReference reference = ConfiguracaoFirebase.getFirebase();
-
     private EditText et_renda;
 
     private RadioGroup rg_campo_genero;
@@ -59,21 +57,24 @@ public class CadastroFase1 extends AppCompatActivity {
         preencherQuestionario();
 
         if (validarCadastro()) {
-            Intent intent = new Intent(this, QuestSQR20.class);
-            intent.putExtra("questionario", questionario);
-            //startActivity(intent);
 
             //Salvar no Firebase
-            reference = ConfiguracaoFirebase.getFirebase().child("usuarios");
-            DatabaseReference autoId = reference.push();
+            DatabaseReference referenciaQuestionario = ConfiguracaoFirebase.getFirebase().child("usuarios").child("questionario");
+            DatabaseReference autoId = referenciaQuestionario.push();
             questionario.setId(autoId.getKey());
 
-            reference.child(questionario.getId()).setValue(questionario);
+            referenciaQuestionario.child(questionario.getId()).setValue(questionario);
 
             //Salvar nas Preferências
             Preferencias preferencias = new Preferencias(CadastroFase1.this);
-            preferencias.salvarDados(questionario.getId(), questionario);
+            preferencias.salvarDados(questionario.getId(), questionario, null, null, null, null);
+
+            Intent intent = new Intent(this, QuestSQR20.class);
+            intent.putExtra("questionario", questionario);
+            startActivity(intent);
         }
+
+        Log.i("#", questionario.toString());
     }
 
     private boolean validarCadastro() {
@@ -167,8 +168,6 @@ public class CadastroFase1 extends AppCompatActivity {
 
         questionario.setRendaFamiliar(valorRenda.equals("") ? 0 : Float.parseFloat(valorRenda));
 
-        questionario.setTemFilhos(rg_campo_religiao.getCheckedRadioButtonId() == R.id.rb_religao_sim);
-
-        Log.i("#", questionario.toString());
+        questionario.setTemReligiao(rg_campo_religiao.getCheckedRadioButtonId() == R.id.rb_religao_sim);
     }
 }

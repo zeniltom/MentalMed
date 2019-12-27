@@ -10,10 +10,14 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.database.DatabaseReference;
+
 import java.io.Serializable;
 import java.util.List;
 
 import med.mental.mentalmed.R;
+import med.mental.mentalmed.config.ConfiguracaoFirebase;
+import med.mental.mentalmed.config.Preferencias;
 import med.mental.mentalmed.model.Pergunta;
 import med.mental.mentalmed.model.PerguntaAnsiedade;
 import med.mental.mentalmed.model.Questionario;
@@ -67,16 +71,25 @@ public class CadastroFase3 extends AppCompatActivity {
             intent.putExtra("nivelAnsiedade", nivelAnsiedade);
             intent.putExtra("resultadosAnsiedade", resultadosAnsiedade);
             startActivity(intent);
+
+            //Salvar no Firebase
+            DatabaseReference referenciaQuestionario = ConfiguracaoFirebase.getFirebase().child("usuarios").child("questionario");
+
+            referenciaQuestionario.child(questionario.getId()).setValue(questionario);
+
+            //Salvar nas Preferências
+            Preferencias preferencias = new Preferencias(CadastroFase3.this);
+            preferencias.salvarDados(questionario.getId(), questionario, null, null, null, null);
         }
     }
 
     private boolean isValid() {
         boolean resultado = true;
 
-//        if (questionario.getHorasLazerSemanalmente() == 0) {
-//            msg();
-//            resultado = false;
-//        }
+        if (questionario.getHorasLazerSemanalmente() == 0) {
+            msg();
+            resultado = false;
+        }
 
         return resultado;
     }

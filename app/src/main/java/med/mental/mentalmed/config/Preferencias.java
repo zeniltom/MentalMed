@@ -25,17 +25,21 @@ public class Preferencias {
         editor.apply();
     }
 
-    public void salvarDados(String idUsuario, Object objeto) {
+    public void salvarDados(String idUsuario, Object questionario, Object questSRQ20, Object questAnsiedade, Object questDepressao, Object questSindromeBurnout) {
 
         Gson gson = new Gson();
-        String json = gson.toJson(objeto);
+        String questionarioJson = gson.toJson(questionario);
+        String questSRQ20Json = gson.toJson(questSRQ20);
+        String questAnsiedadeJson = gson.toJson(questAnsiedade);
+        String questDepressaoJson = gson.toJson(questDepressao);
+        String questSindromeBurnoutJson = gson.toJson(questSindromeBurnout);
 
         editor.putString(CHAVE_IDUSUARIO, idUsuario);
-        editor.putString(CHAVE_QUESTIONARIO, json);
-        editor.putString(CHAVE_QUESTSQR20, json);
-        editor.putString(CHAVE_QUESTANSIEDADE, json);
-        editor.putString(CHAVE_QUESTDEPRESSAO, json);
-        editor.putString(CHAVE_QUESTSINDROMEBURNOUT, json);
+        editor.putString(CHAVE_QUESTIONARIO, questionarioJson);
+        editor.putString(CHAVE_QUESTSQR20, questSRQ20Json);
+        editor.putString(CHAVE_QUESTANSIEDADE, questAnsiedadeJson);
+        editor.putString(CHAVE_QUESTDEPRESSAO, questDepressaoJson);
+        editor.putString(CHAVE_QUESTSINDROMEBURNOUT, questSindromeBurnoutJson);
         editor.commit();
     }
 

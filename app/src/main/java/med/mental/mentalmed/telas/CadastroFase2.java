@@ -10,10 +10,15 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.database.DatabaseReference;
+
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 
 import med.mental.mentalmed.R;
+import med.mental.mentalmed.config.ConfiguracaoFirebase;
+import med.mental.mentalmed.config.Preferencias;
 import med.mental.mentalmed.model.Pergunta;
 import med.mental.mentalmed.model.Questionario;
 
@@ -52,22 +57,57 @@ public class CadastroFase2 extends AppCompatActivity {
             intent.putExtra("questionario", this.questionario);
             intent.putExtra("resultadosSQR20", (Serializable) resultadosSQR20);
             startActivity(intent);
+
+            //Salvar no Firebase
+            DatabaseReference referenciaQuestionario = ConfiguracaoFirebase.getFirebase().child("usuarios").child("questionario");
+
+            HashMap<String, Object> dadosAtualizar = new HashMap<>();
+            dadosAtualizar.put("id", questionario.getId());
+            dadosAtualizar.put("idade", questionario.getIdade());
+            dadosAtualizar.put("semestreInicioGraduacao", questionario.getSemestreInicioGraduacao());
+            dadosAtualizar.put("periodoAtual", questionario.getPeriodoAtual());
+            dadosAtualizar.put("rendaFamiliar", questionario.getRendaFamiliar());
+            dadosAtualizar.put("horasEstudoDiarios", questionario.getHorasEstudoDiarios());
+            dadosAtualizar.put("horasLazerSemanalmente", questionario.getHorasLazerSemanalmente());
+            dadosAtualizar.put("genero", questionario.getGenero());
+            dadosAtualizar.put("sexo", questionario.getSexo());
+            dadosAtualizar.put("moradia", questionario.getMoradia());
+            dadosAtualizar.put("raca", questionario.getRaca());
+            dadosAtualizar.put("temFilhos", questionario.isTemFilhos());
+            dadosAtualizar.put("situacaoConjugal", questionario.isSituacaoConjugal());
+            dadosAtualizar.put("estudaETrabalha", questionario.isEstudaETrabalha());
+            dadosAtualizar.put("temReligiao", questionario.isTemReligiao());
+            dadosAtualizar.put("participaAtividadeAcademica", questionario.isParticipaAtividadeAcademica());
+            dadosAtualizar.put("estudaFimDeSemana", questionario.isEstudaFimDeSemana());
+            dadosAtualizar.put("fuma", questionario.isFuma());
+            dadosAtualizar.put("consomeBebibaAlcoolica", questionario.isConsomeBebibaAlcoolica());
+            dadosAtualizar.put("consomeDrogasIlicitas", questionario.isConsomeDrogasIlicitas());
+            dadosAtualizar.put("praticaAtividadeFisica", questionario.isPraticaAtividadeFisica());
+            dadosAtualizar.put("recebeAcompanhamentoPsicologico", questionario.isRecebeAcompanhamentoPsicologico());
+            dadosAtualizar.put("temNecessidadeAcompanhamentoPsicologico", questionario.isTemNecessidadeAcompanhamentoPsicologico());
+            dadosAtualizar.put("usaMedicamentoPrescrito", questionario.isUsaMedicamentoPrescrito());
+
+            referenciaQuestionario.child(questionario.getId()).updateChildren(dadosAtualizar);
+
+            //Salvar nas Preferências
+            Preferencias preferencias = new Preferencias(CadastroFase2.this);
+            preferencias.salvarDados(questionario.getId(), questionario, null, null, null, null);
         }
     }
 
     private boolean isValid() {
         boolean resultado = true;
 
-//        if (questionario.getSemestreInicioGraduacao() == 0) {
-//            msg("Prencha o semestre que iniciou a graduação");
-//            resultado = false;
-//        } else if (questionario.getPeriodoAtual() == 0) {
-//            msg("Prencha o período atual da sua graduação");
-//            resultado = false;
-//        } else if (questionario.getHorasEstudoDiarios() == 0) {
-//            msg("Informe a quantidade de horas que estuda diariamente");
-//            resultado = false;
-//        }
+        if (questionario.getSemestreInicioGraduacao() == 0) {
+            msg("Prencha o semestre que iniciou a graduação");
+            resultado = false;
+        } else if (questionario.getPeriodoAtual() == 0) {
+            msg("Prencha o período atual da sua graduação");
+            resultado = false;
+        } else if (questionario.getHorasEstudoDiarios() == 0) {
+            msg("Informe a quantidade de horas que estuda diariamente");
+            resultado = false;
+        }
 
         return resultado;
     }

@@ -39,7 +39,7 @@ public class Questionario implements Serializable {
 
     @Override
     public String toString() {
-        return "Questionario{" +
+        return "QUESTIONÁRIO {" +
                 "\n id = " + id +
                 "\n idade = " + idade +
                 "\n semestreInicioGraduacao = " + semestreInicioGraduacao +
@@ -63,7 +63,7 @@ public class Questionario implements Serializable {
                 "\n praticaAtividadeFisica = " + praticaAtividadeFisica +
                 "\n recebeAcompanhamentoPsicologico = " + recebeAcompanhamentoPsicologico +
                 "\n temNecessidadeAcompanhamentoPsicologico = " + temNecessidadeAcompanhamentoPsicologico +
-                "\n usaMedicamentoPrescrito = " + usaMedicamentoPrescrito + '}';
+                "\n usaMedicamentoPrescrito = " + usaMedicamentoPrescrito + " }";
     }
 
     public String getId() {
