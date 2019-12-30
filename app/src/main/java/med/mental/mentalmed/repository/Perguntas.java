@@ -120,6 +120,7 @@ public class Perguntas {
         while (!cursor.isAfterLast()) {
 
             perguntaDepressao = new PerguntaDepressao();
+            perguntaDepressao.setId(cursor.getInt(cursor.getColumnIndex("id")));
             perguntaDepressao.setDescricao(cursor.getString(cursor.getColumnIndex("descricao")));
             perguntaDepressao.setResposta(cursor.getInt(cursor.getColumnIndex("resposta")));
             perguntaDepressao.setCatPergDepressId(cursor.getInt(cursor.getColumnIndex("cat_perg_depress_id")));
