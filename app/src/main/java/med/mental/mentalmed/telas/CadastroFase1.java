@@ -16,6 +16,9 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
+
+import java.util.HashMap;
 
 import med.mental.mentalmed.R;
 import med.mental.mentalmed.config.ConfiguracaoFirebase;
@@ -43,9 +46,9 @@ public class CadastroFase1 extends AppCompatActivity {
 
     private Button bt_proximo_fases;
 
-    private Questionario questionario;
-    private DatabaseReference referenciaQuestionario = ConfiguracaoFirebase.getFirebase().child("usuarios").child("questionario");
-    private String idUsuario;
+    private DatabaseReference referenciaQuestionario = ConfiguracaoFirebase.getFirebase().child("usuarios");
+    private Questionario questionario = new Questionario();
+    private String idUsuario = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +56,7 @@ public class CadastroFase1 extends AppCompatActivity {
         setContentView(R.layout.activity_cadastro_fase_1);
 
         carregarComponentes();
+        carregarDados();
         carregarPreferencias();
 
         bt_proximo_fases.setOnClickListener(v -> avancarSQR20());
@@ -63,21 +67,49 @@ public class CadastroFase1 extends AppCompatActivity {
 
         if (validarCadastro()) {
 
-            //Salvar no Firebase
-            DatabaseReference referenciaQuestionario = ConfiguracaoFirebase.getFirebase().child("usuarios").child("questionario");
-            DatabaseReference autoId = referenciaQuestionario.push();
-            questionario.setId(autoId.getKey());
-
-            referenciaQuestionario.child(questionario.getId()).setValue(questionario);
-
-            //Salvar nas Preferências
-            Preferencias preferencias = new Preferencias(CadastroFase1.this);
-            preferencias.salvarDados(questionario.getId(), questionario, null, null, null, null);
+            salvarFirebase();
 
             Intent intent = new Intent(this, QuestSQR20.class);
             intent.putExtra("questionario", questionario);
             startActivity(intent);
         }
+    }
+
+    private void salvarFirebase() {
+        //Salvar no Firebase
+        HashMap<String, Object> dadosAtualizar = new HashMap<>();
+        dadosAtualizar.put("id", questionario.getId());
+        dadosAtualizar.put("idade", questionario.getIdade());
+        dadosAtualizar.put("semestreInicioGraduacao", questionario.getSemestreInicioGraduacao());
+        dadosAtualizar.put("periodoAtual", questionario.getPeriodoAtual());
+        dadosAtualizar.put("rendaFamiliar", questionario.getRendaFamiliar());
+        dadosAtualizar.put("horasEstudoDiarios", questionario.getHorasEstudoDiarios());
+        dadosAtualizar.put("horasLazerSemanalmente", questionario.getHorasLazerSemanalmente());
+        dadosAtualizar.put("genero", questionario.getGenero());
+        dadosAtualizar.put("sexo", questionario.getSexo());
+        dadosAtualizar.put("moradia", questionario.getMoradia());
+        dadosAtualizar.put("raca", questionario.getRaca());
+        dadosAtualizar.put("temFilhos", questionario.isTemFilhos());
+        dadosAtualizar.put("situacaoConjugal", questionario.isSituacaoConjugal());
+        dadosAtualizar.put("estudaETrabalha", questionario.isEstudaETrabalha());
+        dadosAtualizar.put("temReligiao", questionario.isTemReligiao());
+        dadosAtualizar.put("participaAtividadeAcademica", questionario.isParticipaAtividadeAcademica());
+        dadosAtualizar.put("estudaFimDeSemana", questionario.isEstudaFimDeSemana());
+        dadosAtualizar.put("fuma", questionario.isFuma());
+        dadosAtualizar.put("consomeBebibaAlcoolica", questionario.isConsomeBebibaAlcoolica());
+        dadosAtualizar.put("consomeDrogasIlicitas", questionario.isConsomeDrogasIlicitas());
+        dadosAtualizar.put("praticaAtividadeFisica", questionario.isPraticaAtividadeFisica());
+        dadosAtualizar.put("recebeAcompanhamentoPsicologico", questionario.isRecebeAcompanhamentoPsicologico());
+        dadosAtualizar.put("temNecessidadeAcompanhamentoPsicologico", questionario.isTemNecessidadeAcompanhamentoPsicologico());
+        dadosAtualizar.put("usaMedicamentoPrescrito", questionario.isUsaMedicamentoPrescrito());
+        dadosAtualizar.put("respondido", questionario.isRespondido());
+
+        referenciaQuestionario.child(questionario.getId()).child("questionario")
+                .updateChildren(dadosAtualizar).addOnSuccessListener(aVoid -> {
+            //Salvar nas Preferências
+            Preferencias preferencias = new Preferencias(CadastroFase1.this);
+            preferencias.salvarDados(questionario.getId(), questionario, null, null, null, null);
+        });
     }
 
     private boolean validarCadastro() {
@@ -127,11 +159,21 @@ public class CadastroFase1 extends AppCompatActivity {
         spinner_raca.setAdapter(new ArrayAdapter<>(getApplicationContext(), R.layout.support_simple_spinner_dropdown_item, ENRaca.values()));
     }
 
+    private void carregarDados() {
+        Preferencias preferencias = new Preferencias(CadastroFase1.this);
+        Gson gson = new Gson();
+
+        if (preferencias.getIdUsuario() != null) {
+            String objeto = preferencias.getQuestionario();
+            questionario = gson.fromJson(objeto, Questionario.class);
+        }
+    }
+
     private void carregarPreferencias() {
         Preferencias preferencias = new Preferencias(CadastroFase1.this);
         if (preferencias.getIdUsuario() != null) idUsuario = preferencias.getIdUsuario();
 
-        referenciaQuestionario.orderByChild("id").equalTo(idUsuario).addListenerForSingleValueEvent(new ValueEventListener() {
+        referenciaQuestionario.child(idUsuario).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot dados : dataSnapshot.getChildren()) {
@@ -148,7 +190,10 @@ public class CadastroFase1 extends AppCompatActivity {
     }
 
     private void carregarQuestionario(Questionario questionario) {
-        if (questionario != null) {
+        if (questionario.getId() != null
+                && questionario.getGenero() != null && questionario.getMoradia() != null
+                && questionario.getRaca() != null && questionario.getSexo() != null) {
+
             if (questionario.getGenero().equals(ENGenero.FEMININO))
                 rg_campo_genero.check(R.id.rb_fem);
             else if (questionario.getGenero().equals(ENGenero.MASCULINO))
@@ -179,7 +224,6 @@ public class CadastroFase1 extends AppCompatActivity {
     }
 
     private void coletarRespostas() {
-        questionario = new Questionario();
 
         int checkedRadioButtonId = rg_campo_genero.getCheckedRadioButtonId();
         if (checkedRadioButtonId == R.id.rb_fem)

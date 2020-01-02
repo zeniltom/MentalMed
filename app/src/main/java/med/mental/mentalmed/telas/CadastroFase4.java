@@ -2,15 +2,20 @@ package med.mental.mentalmed.telas;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.RadioGroup;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 
 import med.mental.mentalmed.R;
@@ -29,7 +34,6 @@ public class CadastroFase4 extends AppCompatActivity {
 
     private Button bt_proximo_1;
 
-    private Questionario questionario;
     private List<Pergunta> resultadosSQR20;
     private List<PerguntaAnsiedade> resultadosQuestAnsiedade;
     private List<PerguntaDepressao> resultadosQuestDepressao;
@@ -38,12 +42,15 @@ public class CadastroFase4 extends AppCompatActivity {
     private String nivelDepressao;
     private int resultadosDepressao;
 
+    private Questionario questionario;
+    private DatabaseReference referenciaQuestionario = ConfiguracaoFirebase.getFirebase().child("usuarios");
+    private String idUsuario;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cadastro_fase_4);
 
-        questionario = (Questionario) getIntent().getSerializableExtra("questionario");
         resultadosSQR20 = (List<Pergunta>) getIntent().getSerializableExtra("resultadosSQR20");
         resultadosQuestAnsiedade = (List<PerguntaAnsiedade>) getIntent().getSerializableExtra("resultadosQuestAnsiedade");
         resultadosQuestDepressao = (List<PerguntaDepressao>) getIntent().getSerializableExtra("resultadosQuestDepressao");
@@ -57,12 +64,17 @@ public class CadastroFase4 extends AppCompatActivity {
         }
 
         carregarComponentes();
+        carregarDados();
+        carregarPreferencias();
 
         bt_proximo_1.setOnClickListener(v -> avancarSindromeBurnout());
     }
 
     private void avancarSindromeBurnout() {
-        preencherQuestionarioFazes();
+        coletarRespostas();
+
+        salvarFirebase();
+
         Intent intent = new Intent(this, QuestSindromeBurnout.class);
         intent.putExtra("questionario", this.questionario);
         intent.putExtra("resultadosSQR20", (Serializable) resultadosSQR20);
@@ -73,15 +85,43 @@ public class CadastroFase4 extends AppCompatActivity {
         intent.putExtra("nivelDepressao", nivelDepressao);
         intent.putExtra("resultadosDepressao", resultadosDepressao);
         startActivity(intent);
+    }
 
+    private void salvarFirebase() {
         //Salvar no Firebase
-        DatabaseReference referenciaQuestionario = ConfiguracaoFirebase.getFirebase().child("usuarios").child("questionario");
+        HashMap<String, Object> dadosAtualizar = new HashMap<>();
+        dadosAtualizar.put("id", questionario.getId());
+        dadosAtualizar.put("idade", questionario.getIdade());
+        dadosAtualizar.put("semestreInicioGraduacao", questionario.getSemestreInicioGraduacao());
+        dadosAtualizar.put("periodoAtual", questionario.getPeriodoAtual());
+        dadosAtualizar.put("rendaFamiliar", questionario.getRendaFamiliar());
+        dadosAtualizar.put("horasEstudoDiarios", questionario.getHorasEstudoDiarios());
+        dadosAtualizar.put("horasLazerSemanalmente", questionario.getHorasLazerSemanalmente());
+        dadosAtualizar.put("genero", questionario.getGenero());
+        dadosAtualizar.put("sexo", questionario.getSexo());
+        dadosAtualizar.put("moradia", questionario.getMoradia());
+        dadosAtualizar.put("raca", questionario.getRaca());
+        dadosAtualizar.put("temFilhos", questionario.isTemFilhos());
+        dadosAtualizar.put("situacaoConjugal", questionario.isSituacaoConjugal());
+        dadosAtualizar.put("estudaETrabalha", questionario.isEstudaETrabalha());
+        dadosAtualizar.put("temReligiao", questionario.isTemReligiao());
+        dadosAtualizar.put("participaAtividadeAcademica", questionario.isParticipaAtividadeAcademica());
+        dadosAtualizar.put("estudaFimDeSemana", questionario.isEstudaFimDeSemana());
+        dadosAtualizar.put("fuma", questionario.isFuma());
+        dadosAtualizar.put("consomeBebibaAlcoolica", questionario.isConsomeBebibaAlcoolica());
+        dadosAtualizar.put("consomeDrogasIlicitas", questionario.isConsomeDrogasIlicitas());
+        dadosAtualizar.put("praticaAtividadeFisica", questionario.isPraticaAtividadeFisica());
+        dadosAtualizar.put("recebeAcompanhamentoPsicologico", questionario.isRecebeAcompanhamentoPsicologico());
+        dadosAtualizar.put("temNecessidadeAcompanhamentoPsicologico", questionario.isTemNecessidadeAcompanhamentoPsicologico());
+        dadosAtualizar.put("usaMedicamentoPrescrito", questionario.isUsaMedicamentoPrescrito());
+        dadosAtualizar.put("respondido", questionario.isRespondido());
 
-        referenciaQuestionario.child(questionario.getId()).setValue(questionario);
-
-        //Salvar nas Preferências
-        Preferencias preferencias = new Preferencias(CadastroFase4.this);
-        preferencias.salvarDados(questionario.getId(), questionario, null, null, null, null);
+        referenciaQuestionario.child(questionario.getId()).child("questionario")
+                .updateChildren(dadosAtualizar).addOnSuccessListener(aVoid -> {
+            //Salvar nas Preferências
+            Preferencias preferencias = new Preferencias(CadastroFase4.this);
+            preferencias.salvarDados(questionario.getId(), questionario, null, null, null, null);
+        });
     }
 
     private void carregarComponentes() {
@@ -92,34 +132,66 @@ public class CadastroFase4 extends AppCompatActivity {
         radio_group_medicamento = findViewById(R.id.radio_group_medicamento);
     }
 
-    private void preencherQuestionarioFazes() {
-        switch (radio_group_acompanhamento.getCheckedRadioButtonId()) {
-            case R.id.rb_acomp_sim:
-                questionario.setRecebeAcompanhamentoPsicologico(true);
-                break;
-            case R.id.rb_acomp_nao:
-                questionario.setRecebeAcompanhamentoPsicologico(false);
-                break;
-        }
+    private void carregarDados() {
+        Preferencias preferencias = new Preferencias(CadastroFase4.this);
+        Gson gson = new Gson();
 
-        switch (radio_group_ness_acomp.getCheckedRadioButtonId()) {
-            case R.id.rb_ness_acomp_sim:
-                questionario.setTemNecessidadeAcompanhamentoPsicologico(true);
-                break;
-            case R.id.rb_ness_acomp_nao:
-                questionario.setTemNecessidadeAcompanhamentoPsicologico(false);
-                break;
+        if (preferencias.getIdUsuario() != null) {
+            String objeto = preferencias.getQuestionario();
+            questionario = gson.fromJson(objeto, Questionario.class);
         }
+    }
 
-        switch (radio_group_medicamento.getCheckedRadioButtonId()) {
-            case R.id.rb_medicamento_sim:
-                questionario.setUsaMedicamentoPrescrito(true);
-                break;
-            case R.id.rb_medicamento_nao:
-                questionario.setUsaMedicamentoPrescrito(false);
-                break;
+    private void carregarPreferencias() {
+        Preferencias preferencias = new Preferencias(CadastroFase4.this);
+        if (preferencias.getIdUsuario() != null) idUsuario = preferencias.getIdUsuario();
+
+        referenciaQuestionario.child(idUsuario).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot dados : dataSnapshot.getChildren()) {
+                    questionario = dados.getValue(Questionario.class);
+                    carregarQuestionario(questionario);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void carregarQuestionario(Questionario questionario) {
+        if (questionario.getId() != null
+                && questionario.getGenero() != null && questionario.getMoradia() != null
+                && questionario.getRaca() != null && questionario.getSexo() != null) {
+
+            radio_group_acompanhamento.check(questionario.isParticipaAtividadeAcademica() ? R.id.rb_acomp_sim : R.id.rb_acomp_nao);
+            radio_group_ness_acomp.check(questionario.isEstudaFimDeSemana() ? R.id.rb_ness_acomp_sim : R.id.rb_ness_acomp_nao);
+            radio_group_medicamento.check(questionario.isEstudaFimDeSemana() ? R.id.rb_medicamento_sim : R.id.rb_medicamento_nao);
         }
+    }
 
-        Log.i("#", questionario.toString());
+    private void coletarRespostas() {
+        int radioButtonId = radio_group_acompanhamento.getCheckedRadioButtonId();
+        if (radioButtonId == R.id.rb_acomp_sim)
+            questionario.setRecebeAcompanhamentoPsicologico(true);
+        else if (radioButtonId == R.id.rb_acomp_nao)
+            questionario.setRecebeAcompanhamentoPsicologico(false);
+
+        int checkedRadioButtonId = radio_group_ness_acomp.getCheckedRadioButtonId();
+        if (checkedRadioButtonId == R.id.rb_ness_acomp_sim)
+            questionario.setTemNecessidadeAcompanhamentoPsicologico(true);
+        else if (checkedRadioButtonId == R.id.rb_ness_acomp_nao)
+            questionario.setTemNecessidadeAcompanhamentoPsicologico(false);
+
+
+        int buttonId = radio_group_medicamento.getCheckedRadioButtonId();
+        if (buttonId == R.id.rb_medicamento_sim) questionario.setUsaMedicamentoPrescrito(true);
+        else if (buttonId == R.id.rb_medicamento_nao)
+            questionario.setUsaMedicamentoPrescrito(false);
+
+        questionario.setRespondido(true);
     }
 }

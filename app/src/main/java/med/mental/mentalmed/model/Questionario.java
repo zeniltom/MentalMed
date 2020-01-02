@@ -33,6 +33,8 @@ public class Questionario implements Serializable {
     private boolean temNecessidadeAcompanhamentoPsicologico;
     private boolean usaMedicamentoPrescrito;
 
+    private boolean respondido;
+
     public Questionario() {
 
     }
@@ -256,5 +258,13 @@ public class Questionario implements Serializable {
 
     public void setUsaMedicamentoPrescrito(boolean usaMedicamentoPrescrito) {
         this.usaMedicamentoPrescrito = usaMedicamentoPrescrito;
+    }
+
+    public boolean isRespondido() {
+        return respondido;
+    }
+
+    public void setRespondido(boolean respondido) {
+        this.respondido = respondido;
     }
 }
