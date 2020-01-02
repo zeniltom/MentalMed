@@ -8,9 +8,13 @@ import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -35,13 +39,32 @@ public class CadastroFase2 extends AppCompatActivity {
 
     private Questionario questionario;
     private List<Pergunta> resultadosSQR20;
+    private DatabaseReference referenciaQuestionario = ConfiguracaoFirebase.getFirebase().child("usuarios").child("questionario");
+    private String idUsuario;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cadastro_fase_2);
 
-        questionario = (Questionario) getIntent().getSerializableExtra("questionario");
+        Preferencias preferencias = new Preferencias(CadastroFase2.this);
+        if (preferencias.getIdUsuario() != null) idUsuario = preferencias.getIdUsuario();
+
+        //questionario = (Questionario) getIntent().getSerializableExtra("questionario");
+        referenciaQuestionario.equalTo(idUsuario).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot dados : dataSnapshot.getChildren()) {
+                    questionario = dados.getValue(Questionario.class);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         resultadosSQR20 = (List<Pergunta>) getIntent().getSerializableExtra("resultadosSQR20");
 
         carregarComponentes();
@@ -50,7 +73,7 @@ public class CadastroFase2 extends AppCompatActivity {
     }
 
     private void abrirAnsiedade() {
-        preencherQuestionarioFazes();
+        coletarRespostas();
 
         if (isValid()) {
             Intent intent = new Intent(this, QuestAnsiedade.class);
@@ -59,8 +82,6 @@ public class CadastroFase2 extends AppCompatActivity {
             startActivity(intent);
 
             //Salvar no Firebase
-            DatabaseReference referenciaQuestionario = ConfiguracaoFirebase.getFirebase().child("usuarios").child("questionario");
-
             HashMap<String, Object> dadosAtualizar = new HashMap<>();
             dadosAtualizar.put("id", questionario.getId());
             dadosAtualizar.put("idade", questionario.getIdade());
@@ -127,7 +148,7 @@ public class CadastroFase2 extends AppCompatActivity {
         radio_group_estuda = findViewById(R.id.radio_group_estuda);
     }
 
-    private void preencherQuestionarioFazes() {
+    private void coletarRespostas() {
         int radioButtonId = radio_group_ativ_acad.getCheckedRadioButtonId();
         if (radioButtonId == R.id.rb_ativ_acad_sim)
             questionario.setParticipaAtividadeAcademica(true);

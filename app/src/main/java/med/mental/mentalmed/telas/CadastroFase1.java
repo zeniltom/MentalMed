@@ -2,7 +2,6 @@ package med.mental.mentalmed.telas;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -10,9 +9,13 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 
 import med.mental.mentalmed.R;
 import med.mental.mentalmed.config.ConfiguracaoFirebase;
@@ -22,7 +25,6 @@ import med.mental.mentalmed.model.ENMoradia;
 import med.mental.mentalmed.model.ENRaca;
 import med.mental.mentalmed.model.ENSexo;
 import med.mental.mentalmed.model.Questionario;
-
 
 public class CadastroFase1 extends AppCompatActivity {
 
@@ -42,6 +44,8 @@ public class CadastroFase1 extends AppCompatActivity {
     private Button bt_proximo_fases;
 
     private Questionario questionario;
+    private DatabaseReference referenciaQuestionario = ConfiguracaoFirebase.getFirebase().child("usuarios").child("questionario");
+    private String idUsuario;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,12 +53,13 @@ public class CadastroFase1 extends AppCompatActivity {
         setContentView(R.layout.activity_cadastro_fase_1);
 
         carregarComponentes();
+        carregarPreferencias();
 
         bt_proximo_fases.setOnClickListener(v -> avancarSQR20());
     }
 
     private void avancarSQR20() {
-        preencherQuestionario();
+        coletarRespostas();
 
         if (validarCadastro()) {
 
@@ -73,8 +78,6 @@ public class CadastroFase1 extends AppCompatActivity {
             intent.putExtra("questionario", questionario);
             startActivity(intent);
         }
-
-        Log.i("#", questionario.toString());
     }
 
     private boolean validarCadastro() {
@@ -124,7 +127,58 @@ public class CadastroFase1 extends AppCompatActivity {
         spinner_raca.setAdapter(new ArrayAdapter<>(getApplicationContext(), R.layout.support_simple_spinner_dropdown_item, ENRaca.values()));
     }
 
-    private void preencherQuestionario() {
+    private void carregarPreferencias() {
+        Preferencias preferencias = new Preferencias(CadastroFase1.this);
+        if (preferencias.getIdUsuario() != null) idUsuario = preferencias.getIdUsuario();
+
+        referenciaQuestionario.orderByChild("id").equalTo(idUsuario).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot dados : dataSnapshot.getChildren()) {
+                    questionario = dados.getValue(Questionario.class);
+                    carregarQuestionario(questionario);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void carregarQuestionario(Questionario questionario) {
+        if (questionario != null) {
+            if (questionario.getGenero().equals(ENGenero.FEMININO))
+                rg_campo_genero.check(R.id.rb_fem);
+            else if (questionario.getGenero().equals(ENGenero.MASCULINO))
+                rg_campo_genero.check(R.id.rb_masc);
+            else if (questionario.getGenero().equals(ENGenero.LGBT))
+                rg_campo_genero.check(R.id.rb_lgbt);
+
+            rg_campo_sexo.check(questionario.getSexo().equals(ENSexo.HOMEN) ? R.id.homem : R.id.mulher);
+
+            if (questionario.getMoradia().equals(ENMoradia.FAMILIARES))
+                rg_campo_moradia.check(R.id.rb_familiar);
+            else if (questionario.getMoradia().equals(ENMoradia.AMIGOS))
+                rg_campo_moradia.check(R.id.rb_amigos);
+            else if (questionario.getMoradia().equals(ENMoradia.SOZINHO))
+                rg_campo_moradia.check(R.id.rb_sozinho);
+
+            rg_campo_filiacao.check(questionario.isTemFilhos() ? R.id.rb_sim : R.id.rb_nao);
+            rg_campo_conjugal.check(questionario.isTemFilhos() ? R.id.c_com : R.id.s_com);
+            rg_campo_trab.check(questionario.isTemFilhos() ? R.id.rb_tsim : R.id.rb_tnao);
+
+            spinner_idade.setSelection(getIndex(spinner_idade, String.valueOf(questionario.getIdade())));
+            spinner_raca.setSelection(getIndex(spinner_raca, questionario.getRaca().toString()));
+
+            et_renda.setText(String.valueOf(questionario.getRendaFamiliar()));
+
+            rg_campo_religiao.check(questionario.isTemReligiao() ? R.id.rb_religao_sim : R.id.rb_religao_nao);
+        }
+    }
+
+    private void coletarRespostas() {
         questionario = new Questionario();
 
         int checkedRadioButtonId = rg_campo_genero.getCheckedRadioButtonId();
@@ -169,5 +223,12 @@ public class CadastroFase1 extends AppCompatActivity {
         questionario.setRendaFamiliar(valorRenda.equals("") ? 0 : Float.parseFloat(valorRenda));
 
         questionario.setTemReligiao(rg_campo_religiao.getCheckedRadioButtonId() == R.id.rb_religao_sim);
+    }
+
+    private int getIndex(Spinner spinner, String myString) {
+        for (int i = 0; i < spinner.getCount(); i++)
+            if (spinner.getItemAtPosition(i).toString().equalsIgnoreCase(myString)) return i;
+
+        return 0;
     }
 }
