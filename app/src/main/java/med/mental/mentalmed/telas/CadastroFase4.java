@@ -73,7 +73,10 @@ public class CadastroFase4 extends AppCompatActivity {
     private void avancarSindromeBurnout() {
         coletarRespostas();
 
-        salvarFirebase();
+        if (!questionario.isRespondido()) {
+            questionario.setRespondido(true);
+            salvarFirebase();
+        }
 
         Intent intent = new Intent(this, QuestSindromeBurnout.class);
         intent.putExtra("questionario", this.questionario);
@@ -191,7 +194,5 @@ public class CadastroFase4 extends AppCompatActivity {
         if (buttonId == R.id.rb_medicamento_sim) questionario.setUsaMedicamentoPrescrito(true);
         else if (buttonId == R.id.rb_medicamento_nao)
             questionario.setUsaMedicamentoPrescrito(false);
-
-        questionario.setRespondido(true);
     }
 }

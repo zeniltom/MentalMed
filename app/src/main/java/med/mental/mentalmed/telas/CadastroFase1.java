@@ -67,7 +67,7 @@ public class CadastroFase1 extends AppCompatActivity {
 
         if (validarCadastro()) {
 
-            salvarFirebase();
+            if (!questionario.isRespondido()) salvarFirebase();
 
             Intent intent = new Intent(this, QuestSQR20.class);
             intent.putExtra("questionario", questionario);
@@ -265,7 +265,6 @@ public class CadastroFase1 extends AppCompatActivity {
         String valorRenda = et_renda.getText().toString();
 
         questionario.setRendaFamiliar(valorRenda.equals("") ? 0 : Float.parseFloat(valorRenda));
-
         questionario.setTemReligiao(rg_campo_religiao.getCheckedRadioButtonId() == R.id.rb_religao_sim);
     }
 

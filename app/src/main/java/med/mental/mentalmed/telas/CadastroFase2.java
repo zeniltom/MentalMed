@@ -61,7 +61,7 @@ public class CadastroFase2 extends AppCompatActivity {
 
         if (isValid()) {
 
-            salvarFirebase();
+            if (!questionario.isRespondido()) salvarFirebase();
 
             Intent intent = new Intent(this, QuestAnsiedade.class);
             intent.putExtra("questionario", this.questionario);
