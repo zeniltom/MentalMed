@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         Preferencias preferencias = new Preferencias(MainActivity.this);
         if (preferencias.getIdUsuario() != null) idUsuario = preferencias.getIdUsuario();
 
-        referenciaQuestionario.child(idUsuario).addListenerForSingleValueEvent(new ValueEventListener() {
+        referenciaQuestionario.orderByChild("id").equalTo(idUsuario).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot dados : dataSnapshot.getChildren()) {

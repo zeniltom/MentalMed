@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 public class Pergunta implements Serializable {
 
+    private Long id;
     private String descricao;
     private boolean marcada = false;
     private boolean resposta;
@@ -18,6 +19,14 @@ public class Pergunta implements Serializable {
         String marcou = marcada ? "" : " - NÃO MARCOU";
 
         return descricao + " R: " + r + marcou;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getDescricao() {
