@@ -2,6 +2,7 @@ package med.mental.mentalmed.telas;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
@@ -9,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -28,6 +30,8 @@ import med.mental.mentalmed.model.PerguntaAnsiedade;
 import med.mental.mentalmed.model.Questionario;
 
 public class CadastroFase3 extends AppCompatActivity {
+
+    private ConstraintLayout constraintLayout;
 
     private EditText et_lazer_horas;
 
@@ -65,6 +69,7 @@ public class CadastroFase3 extends AppCompatActivity {
         carregarComponentes();
         carregarDados();
         carregarPreferencias();
+        bloquearComponentes();
 
         bt_proximo_1.setOnClickListener(v -> avancarDepressao());
     }
@@ -139,6 +144,8 @@ public class CadastroFase3 extends AppCompatActivity {
     }
 
     private void carregarComponentes() {
+        constraintLayout = findViewById(R.id.constraintLayout);
+
         bt_proximo_1 = findViewById(R.id.bt_proximo_1);
 
         et_lazer_horas = findViewById(R.id.et_lazer_horas);
@@ -182,7 +189,11 @@ public class CadastroFase3 extends AppCompatActivity {
     private void carregarQuestionario(Questionario questionario) {
         if (questionario.getId() != null
                 && questionario.getGenero() != null && questionario.getMoradia() != null
-                && questionario.getRaca() != null && questionario.getSexo() != null) {
+                && questionario.getRaca() != null && questionario.getSexo() != null
+                && questionario.getSemestreInicioGraduacao() > 0
+                && questionario.getPeriodoAtual() > 0
+                && questionario.getHorasEstudoDiarios() > 0
+                && questionario.getHorasLazerSemanalmente() > 0) {
 
             radio_group_fumo.check(questionario.isParticipaAtividadeAcademica() ? R.id.rb_fumo_sim : R.id.rb_fumo_nao);
             radio_group_bebida.check(questionario.isEstudaFimDeSemana() ? R.id.rb_bebida_sim : R.id.rb_bebida_nao);
@@ -193,33 +204,50 @@ public class CadastroFase3 extends AppCompatActivity {
         }
     }
 
+    private void bloquearComponentes() {
+        if (questionario.isRespondido()) {
+            for (int i = 0; i < constraintLayout.getChildCount(); i++) {
+                View child = constraintLayout.getChildAt(i);
+                if (child.getClass().equals(RadioGroup.class)) {
+                    RadioGroup radioGroup = (RadioGroup) child;
+                    for (int r = 0; r < radioGroup.getChildCount(); r++) {
+                        View radio = radioGroup.getChildAt(r);
+                        radio.setEnabled(false);
+                    }
+                }
+            }
+            et_lazer_horas.setEnabled(false);
+        }
+    }
+
     private void coletarRespostas() {
-        int checkedRadioButtonId = radio_group_fumo.getCheckedRadioButtonId();
-        if (checkedRadioButtonId == R.id.rb_fumo_sim) questionario.setFuma(true);
-        else if (checkedRadioButtonId == R.id.rb_fumo_nao)
-            questionario.setFuma(false);
+//        int checkedRadioButtonId = radio_group_fumo.getCheckedRadioButtonId();
+//        if (checkedRadioButtonId == R.id.rb_fumo_sim) questionario.setFuma(true);
+//        else if (checkedRadioButtonId == R.id.rb_fumo_nao)
+//            questionario.setFuma(false);
+//
+//        int radioButtonId = radio_group_bebida.getCheckedRadioButtonId();
+//        if (radioButtonId == R.id.rb_bebida_sim)
+//            questionario.setConsomeBebibaAlcoolica(true);
+//        else if (radioButtonId == R.id.rb_bebida_nao)
+//            questionario.setConsomeBebibaAlcoolica(false);
+//
+//        int buttonId = radio_group_atividade.getCheckedRadioButtonId();
+//        if (buttonId == R.id.rb_atividade_sim)
+//            questionario.setFuma(true);
+//        else if (buttonId == R.id.rb_atividade_nao)
+//            questionario.setFuma(false);
+//
+//        int id = radio_group_drogas.getCheckedRadioButtonId();
+//        if (id == R.id.rb_drogas_sim)
+//            questionario.setConsomeDrogasIlicitas(true);
+//        else if (id == R.id.rb_drogas_nao)
+//            questionario.setConsomeDrogasIlicitas(false);
 
-        int radioButtonId = radio_group_bebida.getCheckedRadioButtonId();
-        if (radioButtonId == R.id.rb_bebida_sim)
-            questionario.setConsomeBebibaAlcoolica(true);
-        else if (radioButtonId == R.id.rb_bebida_nao)
-            questionario.setConsomeBebibaAlcoolica(false);
-
-        int buttonId = radio_group_atividade.getCheckedRadioButtonId();
-        if (buttonId == R.id.rb_atividade_sim)
-            questionario.setFuma(true);
-        else if (buttonId == R.id.rb_atividade_nao)
-            questionario.setFuma(false);
-
-        int id = radio_group_drogas.getCheckedRadioButtonId();
-        if (id == R.id.rb_drogas_sim)
-            questionario.setConsomeDrogasIlicitas(true);
-        else if (id == R.id.rb_drogas_nao)
-            questionario.setConsomeDrogasIlicitas(false);
-
-        questionario.setConsomeBebibaAlcoolica(radio_group_bebida.getCheckedRadioButtonId() == R.id.rb_bebida_nao);
-        questionario.setPraticaAtividadeFisica(radio_group_atividade.getCheckedRadioButtonId() == R.id.c_com);
-        questionario.setConsomeDrogasIlicitas(radio_group_drogas.getCheckedRadioButtonId() == R.id.rb_tsim);
+        questionario.setFuma(radio_group_fumo.getCheckedRadioButtonId() == R.id.rb_fumo_sim);
+        questionario.setConsomeBebibaAlcoolica(radio_group_bebida.getCheckedRadioButtonId() == R.id.rb_bebida_sim);
+        questionario.setPraticaAtividadeFisica(radio_group_atividade.getCheckedRadioButtonId() == R.id.rb_atividade_sim);
+        questionario.setConsomeDrogasIlicitas(radio_group_drogas.getCheckedRadioButtonId() == R.id.rb_drogas_sim);
 
         String horasLazer = et_lazer_horas.getText().toString();
         questionario.setHorasLazerSemanalmente(horasLazer.equals("") ? 0 : Float.parseFloat(horasLazer));

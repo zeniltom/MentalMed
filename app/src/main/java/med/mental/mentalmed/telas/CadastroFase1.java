@@ -2,15 +2,18 @@ package med.mental.mentalmed.telas;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -30,6 +33,8 @@ import med.mental.mentalmed.model.ENSexo;
 import med.mental.mentalmed.model.Questionario;
 
 public class CadastroFase1 extends AppCompatActivity {
+
+    private ConstraintLayout constraintLayout;
 
     private EditText et_renda;
 
@@ -58,6 +63,7 @@ public class CadastroFase1 extends AppCompatActivity {
         carregarComponentes();
         carregarDados();
         carregarPreferencias();
+        bloquearComponentes();
 
         bt_proximo_fases.setOnClickListener(v -> avancarSQR20());
     }
@@ -93,15 +99,7 @@ public class CadastroFase1 extends AppCompatActivity {
         dadosAtualizar.put("situacaoConjugal", questionario.isSituacaoConjugal());
         dadosAtualizar.put("estudaETrabalha", questionario.isEstudaETrabalha());
         dadosAtualizar.put("temReligiao", questionario.isTemReligiao());
-        dadosAtualizar.put("participaAtividadeAcademica", questionario.isParticipaAtividadeAcademica());
-        dadosAtualizar.put("estudaFimDeSemana", questionario.isEstudaFimDeSemana());
-        dadosAtualizar.put("fuma", questionario.isFuma());
-        dadosAtualizar.put("consomeBebibaAlcoolica", questionario.isConsomeBebibaAlcoolica());
-        dadosAtualizar.put("consomeDrogasIlicitas", questionario.isConsomeDrogasIlicitas());
-        dadosAtualizar.put("praticaAtividadeFisica", questionario.isPraticaAtividadeFisica());
-        dadosAtualizar.put("recebeAcompanhamentoPsicologico", questionario.isRecebeAcompanhamentoPsicologico());
-        dadosAtualizar.put("temNecessidadeAcompanhamentoPsicologico", questionario.isTemNecessidadeAcompanhamentoPsicologico());
-        dadosAtualizar.put("usaMedicamentoPrescrito", questionario.isUsaMedicamentoPrescrito());
+
         dadosAtualizar.put("respondido", questionario.isRespondido());
 
         referenciaQuestionario.child(questionario.getId()).child("questionario")
@@ -140,6 +138,8 @@ public class CadastroFase1 extends AppCompatActivity {
     }
 
     private void carregarComponentes() {
+        constraintLayout = findViewById(R.id.constraintLayout);
+
         bt_proximo_fases = findViewById(R.id.bt_proximo_fases);
 
         et_renda = findViewById(R.id.et_renda);
@@ -211,8 +211,8 @@ public class CadastroFase1 extends AppCompatActivity {
                 rg_campo_moradia.check(R.id.rb_sozinho);
 
             rg_campo_filiacao.check(questionario.isTemFilhos() ? R.id.rb_sim : R.id.rb_nao);
-            rg_campo_conjugal.check(questionario.isTemFilhos() ? R.id.c_com : R.id.s_com);
-            rg_campo_trab.check(questionario.isTemFilhos() ? R.id.rb_tsim : R.id.rb_tnao);
+            rg_campo_conjugal.check(questionario.isSituacaoConjugal() ? R.id.c_com : R.id.s_com);
+            rg_campo_trab.check(questionario.isEstudaETrabalha() ? R.id.rb_tsim : R.id.rb_tnao);
 
             spinner_idade.setSelection(getIndex(spinner_idade, String.valueOf(questionario.getIdade())));
             spinner_raca.setSelection(getIndex(spinner_raca, questionario.getRaca().toString()));
@@ -220,6 +220,32 @@ public class CadastroFase1 extends AppCompatActivity {
             et_renda.setText(String.valueOf(questionario.getRendaFamiliar()));
 
             rg_campo_religiao.check(questionario.isTemReligiao() ? R.id.rb_religao_sim : R.id.rb_religao_nao);
+
+        }
+    }
+
+    private void bloquearComponentes() {
+        if (questionario.isRespondido()) {
+            for (int i = 0; i < constraintLayout.getChildCount(); i++) {
+                View child = constraintLayout.getChildAt(i);
+                if (child.getClass().equals(RelativeLayout.class)) {
+                    RelativeLayout relativeLayout = (RelativeLayout) child;
+                    for (int j = 0; j < relativeLayout.getChildCount(); j++) {
+                        View viewDoRL = relativeLayout.getChildAt(j);
+                        if (viewDoRL.getClass().equals(RadioGroup.class)) {
+                            RadioGroup radioGroup = (RadioGroup) viewDoRL;
+                            for (int r = 0; r < radioGroup.getChildCount(); r++) {
+                                View radio = radioGroup.getChildAt(r);
+                                radio.setEnabled(false);
+                            }
+                        }
+                    }
+                    child.setEnabled(false);
+                }
+            }
+            spinner_idade.setEnabled(false);
+            spinner_raca.setEnabled(false);
+            et_renda.setEnabled(false);
         }
     }
 

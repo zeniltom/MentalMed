@@ -2,6 +2,7 @@ package med.mental.mentalmed.telas;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.View;
 import android.widget.Toast;
 
@@ -23,11 +24,15 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseReference referenciaQuestionario = ConfiguracaoFirebase.getFirebase().child("usuarios");
     private String idUsuario = "";
     private Questionario questionario;
+    private String androidId = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        androidId = Settings.Secure.getString(getContentResolver(),
+                Settings.Secure.ANDROID_ID);
 
         carregarPreferencias();
     }
@@ -42,9 +47,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void criarPreferencias() {
         if (questionario == null) {
-            DatabaseReference autoId = referenciaQuestionario.push();
             questionario = new Questionario();
-            questionario.setId(autoId.getKey());
+            questionario.setId(androidId);
             questionario.setRespondido(false);
 
             referenciaQuestionario.child(questionario.getId()).child("questionario")

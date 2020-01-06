@@ -2,11 +2,13 @@ package med.mental.mentalmed.telas;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.RadioGroup;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -27,6 +29,8 @@ import med.mental.mentalmed.model.PerguntaDepressao;
 import med.mental.mentalmed.model.Questionario;
 
 public class CadastroFase4 extends AppCompatActivity {
+
+    private ConstraintLayout constraintLayout;
 
     private RadioGroup radio_group_acompanhamento;
     private RadioGroup radio_group_ness_acomp;
@@ -66,6 +70,7 @@ public class CadastroFase4 extends AppCompatActivity {
         carregarComponentes();
         carregarDados();
         carregarPreferencias();
+        bloquearComponentes();
 
         bt_proximo_1.setOnClickListener(v -> avancarSindromeBurnout());
     }
@@ -128,6 +133,8 @@ public class CadastroFase4 extends AppCompatActivity {
     }
 
     private void carregarComponentes() {
+        constraintLayout = findViewById(R.id.constraintLayout);
+
         bt_proximo_1 = findViewById(R.id.bt_proximo_1);
 
         radio_group_acompanhamento = findViewById(R.id.radio_group_acompanhamento);
@@ -168,11 +175,30 @@ public class CadastroFase4 extends AppCompatActivity {
     private void carregarQuestionario(Questionario questionario) {
         if (questionario.getId() != null
                 && questionario.getGenero() != null && questionario.getMoradia() != null
-                && questionario.getRaca() != null && questionario.getSexo() != null) {
+                && questionario.getRaca() != null && questionario.getSexo() != null
+                && questionario.getSemestreInicioGraduacao() > 0
+                && questionario.getPeriodoAtual() > 0
+                && questionario.getHorasEstudoDiarios() > 0
+                && questionario.getHorasLazerSemanalmente() > 0) {
 
-            radio_group_acompanhamento.check(questionario.isParticipaAtividadeAcademica() ? R.id.rb_acomp_sim : R.id.rb_acomp_nao);
-            radio_group_ness_acomp.check(questionario.isEstudaFimDeSemana() ? R.id.rb_ness_acomp_sim : R.id.rb_ness_acomp_nao);
-            radio_group_medicamento.check(questionario.isEstudaFimDeSemana() ? R.id.rb_medicamento_sim : R.id.rb_medicamento_nao);
+            radio_group_acompanhamento.check(questionario.isRecebeAcompanhamentoPsicologico() ? R.id.rb_acomp_sim : R.id.rb_acomp_nao);
+            radio_group_ness_acomp.check(questionario.isTemNecessidadeAcompanhamentoPsicologico() ? R.id.rb_ness_acomp_sim : R.id.rb_ness_acomp_nao);
+            radio_group_medicamento.check(questionario.isUsaMedicamentoPrescrito() ? R.id.rb_medicamento_sim : R.id.rb_medicamento_nao);
+        }
+    }
+
+    private void bloquearComponentes() {
+        if (questionario.isRespondido()) {
+            for (int i = 0; i < constraintLayout.getChildCount(); i++) {
+                View child = constraintLayout.getChildAt(i);
+                if (child.getClass().equals(RadioGroup.class)) {
+                    RadioGroup radioGroup = (RadioGroup) child;
+                    for (int r = 0; r < radioGroup.getChildCount(); r++) {
+                        View radio = radioGroup.getChildAt(r);
+                        radio.setEnabled(false);
+                    }
+                }
+            }
         }
     }
 

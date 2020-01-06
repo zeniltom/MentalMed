@@ -2,6 +2,7 @@ package med.mental.mentalmed.telas;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
@@ -9,6 +10,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -27,6 +30,8 @@ import med.mental.mentalmed.model.Pergunta;
 import med.mental.mentalmed.model.Questionario;
 
 public class CadastroFase2 extends AppCompatActivity {
+
+    private ConstraintLayout constraintLayout;
 
     private EditText et_semetre_grad;
     private EditText et_horas_estudo;
@@ -52,6 +57,7 @@ public class CadastroFase2 extends AppCompatActivity {
         carregarComponentes();
         carregarDados();
         carregarPreferencias();
+        bloquearComponentes();
 
         bt_proximo_1.setOnClickListener(v -> abrirAnsiedade());
     }
@@ -90,13 +96,7 @@ public class CadastroFase2 extends AppCompatActivity {
         dadosAtualizar.put("temReligiao", questionario.isTemReligiao());
         dadosAtualizar.put("participaAtividadeAcademica", questionario.isParticipaAtividadeAcademica());
         dadosAtualizar.put("estudaFimDeSemana", questionario.isEstudaFimDeSemana());
-        dadosAtualizar.put("fuma", questionario.isFuma());
-        dadosAtualizar.put("consomeBebibaAlcoolica", questionario.isConsomeBebibaAlcoolica());
-        dadosAtualizar.put("consomeDrogasIlicitas", questionario.isConsomeDrogasIlicitas());
-        dadosAtualizar.put("praticaAtividadeFisica", questionario.isPraticaAtividadeFisica());
-        dadosAtualizar.put("recebeAcompanhamentoPsicologico", questionario.isRecebeAcompanhamentoPsicologico());
-        dadosAtualizar.put("temNecessidadeAcompanhamentoPsicologico", questionario.isTemNecessidadeAcompanhamentoPsicologico());
-        dadosAtualizar.put("usaMedicamentoPrescrito", questionario.isUsaMedicamentoPrescrito());
+
         dadosAtualizar.put("respondido", questionario.isRespondido());
 
         referenciaQuestionario.child(questionario.getId()).child("questionario")
@@ -129,6 +129,8 @@ public class CadastroFase2 extends AppCompatActivity {
     }
 
     private void carregarComponentes() {
+        constraintLayout = findViewById(R.id.constraintLayout);
+
         bt_proximo_1 = findViewById(R.id.bt_proximo_1);
 
         et_semetre_grad = findViewById(R.id.et_semetre_grad);
@@ -172,7 +174,10 @@ public class CadastroFase2 extends AppCompatActivity {
     private void carregarQuestionario(Questionario questionario) {
         if (questionario.getId() != null
                 && questionario.getGenero() != null && questionario.getMoradia() != null
-                && questionario.getRaca() != null && questionario.getSexo() != null) {
+                && questionario.getRaca() != null && questionario.getSexo() != null
+                && questionario.getSemestreInicioGraduacao() > 0
+                && questionario.getPeriodoAtual() > 0
+                && questionario.getHorasEstudoDiarios() > 0) {
 
             et_semetre_grad.setText(String.valueOf(questionario.getSemestreInicioGraduacao()));
             et_periodo_atual.setText(String.valueOf(questionario.getPeriodoAtual()));
@@ -183,19 +188,26 @@ public class CadastroFase2 extends AppCompatActivity {
         }
     }
 
+    private void bloquearComponentes() {
+        if (questionario.isRespondido()) {
+            for (int i = 0; i < constraintLayout.getChildCount(); i++) {
+                View child = constraintLayout.getChildAt(i);
+                if (child.getClass().equals(RadioGroup.class) && !child.getClass().equals(AppCompatButton.class)) {
+                    RadioGroup radioGroup = (RadioGroup) child;
+                    for (int r = 0; r < radioGroup.getChildCount(); r++) {
+                        View radio = radioGroup.getChildAt(r);
+                        radio.setEnabled(false);
+                    }
+                }
+            }
+
+            et_semetre_grad.setEnabled(false);
+            et_periodo_atual.setEnabled(false);
+            et_horas_estudo.setEnabled(false);
+        }
+    }
+
     private void coletarRespostas() {
-        int radioButtonId = radio_group_ativ_acad.getCheckedRadioButtonId();
-        if (radioButtonId == R.id.rb_ativ_acad_sim)
-            questionario.setParticipaAtividadeAcademica(true);
-        else if (radioButtonId == R.id.rb_ativ_acad_nao)
-            questionario.setParticipaAtividadeAcademica(false);
-
-        int checkedRadioButtonId = radio_group_estuda.getCheckedRadioButtonId();
-        if (checkedRadioButtonId == R.id.rb_estuda_sim)
-            questionario.setEstudaFimDeSemana(true);
-        else if (checkedRadioButtonId == R.id.rb_estuda_nao)
-            questionario.setEstudaFimDeSemana(false);
-
         String semestre = et_semetre_grad.getText().toString();
         String periodo = et_periodo_atual.getText().toString();
         String horasEstudo = et_horas_estudo.getText().toString();
@@ -203,5 +215,8 @@ public class CadastroFase2 extends AppCompatActivity {
         questionario.setSemestreInicioGraduacao(semestre.equals("") ? 0 : Integer.parseInt(semestre));
         questionario.setPeriodoAtual(periodo.equals("") ? 0 : Integer.parseInt(periodo));
         questionario.setHorasEstudoDiarios(horasEstudo.equals("") ? 0 : Float.parseFloat(horasEstudo));
+
+        questionario.setParticipaAtividadeAcademica(radio_group_ativ_acad.getCheckedRadioButtonId() == R.id.rb_ativ_acad_sim);
+        questionario.setEstudaFimDeSemana(radio_group_estuda.getCheckedRadioButtonId() == R.id.rb_estuda_sim);
     }
 }
