@@ -2,11 +2,13 @@ package med.mental.mentalmed.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -37,12 +39,13 @@ public class PerguntaAdapter extends BaseAdapter {
 
     @SuppressLint({"ViewHolder", "InflateParams"})
     @Override
-    public View getView(final int i, View view, ViewGroup viewGroup) {
+    public View getView(final int position, View view, ViewGroup viewGroup) {
         view = inflater.inflate(R.layout.item_pergunta, null);
 
-        final Pergunta pergunta = questoes.get(i);
+        final Pergunta pergunta = questoes.get(position);
 
         TextView descricao = view.findViewById(R.id.descricao);
+        RadioGroup radioGroup = view.findViewById(R.id.radio_group_pergunta);
         RadioButton radio_sim = view.findViewById(R.id.radio_sim);
         RadioButton radio_nao = view.findViewById(R.id.radio_nao);
 
@@ -51,21 +54,28 @@ public class PerguntaAdapter extends BaseAdapter {
         radio_sim.setChecked(pergunta.isMarcada() && pergunta.isResposta());
         radio_nao.setChecked(pergunta.isMarcada() && !pergunta.isResposta());
 
-        radio_sim.setOnCheckedChangeListener((buttonView, isChecked) -> {
+        //BLOQUEAR RESPOSTAS JÁ RESPONDIDAS NO SQR20
+        for (int i = 0; i < radioGroup.getChildCount(); i++) {
+            View radio = radioGroup.getChildAt(i);
+            if (pergunta.isMarcada() && pergunta.isResposta()) {
+                descricao.setTextColor(Color.LTGRAY);
+                radio.setEnabled(false);
+            }
+        }
 
+        radio_sim.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
                 pergunta.setResposta(true);
                 pergunta.setMarcada(true);
-                resultados.set(i, pergunta);
+                resultados.set(position, pergunta);
             }
         });
 
         radio_nao.setOnCheckedChangeListener((buttonView, isChecked) -> {
-
             if (isChecked) {
                 pergunta.setResposta(false);
                 pergunta.setMarcada(true);
-                resultados.set(i, pergunta);
+                resultados.set(position, pergunta);
             }
         });
 

@@ -3,6 +3,7 @@ package med.mental.mentalmed.telas;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -14,17 +15,47 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import dmax.dialog.SpotsDialog;
 import med.mental.mentalmed.R;
 import med.mental.mentalmed.config.ConfiguracaoFirebase;
 import med.mental.mentalmed.config.Preferencias;
+import med.mental.mentalmed.model.Pergunta;
 import med.mental.mentalmed.model.Questionario;
 
 public class MainActivity extends AppCompatActivity {
 
-    private DatabaseReference referenciaQuestionario = ConfiguracaoFirebase.getFirebase().child("usuarios");
-    private String idUsuario = "";
+    private DatabaseReference referenciaQuestionario = ConfiguracaoFirebase.getFirebase().child("questionario");
+    private DatabaseReference referenciaQuestSQR20 = ConfiguracaoFirebase.getFirebase().child("questionarioSQ20");
+
+    private DatabaseReference referenciaListaQuestSQR20 = ConfiguracaoFirebase.getFirebase().child("perguntasSQR20");
+
     private Questionario questionario;
+    private List<Pergunta> listaDePerguntas = new ArrayList<>();
+
+    private String idUsuario = "";
     private String androidId = "";
+
+    private SpotsDialog progressDialog;
+
+    private ValueEventListener valueEventListenerQuestionario;
+    private ValueEventListener valueEventListenerListaQuestSQR20;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        referenciaQuestionario.addValueEventListener(valueEventListenerQuestionario);
+        referenciaListaQuestSQR20.addValueEventListener(valueEventListenerListaQuestSQR20);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        referenciaQuestionario.removeEventListener(valueEventListenerQuestionario);
+        referenciaListaQuestSQR20.removeEventListener(valueEventListenerListaQuestSQR20);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         androidId = Settings.Secure.getString(getContentResolver(),
                 Settings.Secure.ANDROID_ID);
 
+        carregarComponentes();
         carregarPreferencias();
     }
 
@@ -51,9 +83,29 @@ public class MainActivity extends AppCompatActivity {
             questionario.setId(androidId);
             questionario.setRespondido(false);
 
-            referenciaQuestionario.child(questionario.getId()).child("questionario")
-                    .setValue(questionario).addOnSuccessListener(aVoid -> {
-            }).addOnFailureListener(e -> msg("Erro ao salvar registros no Servidor! ERRO: " + e.getLocalizedMessage()));
+            //SALVA O QUESTIONÁRIO SEM RESPOSTA COMPLETO NO FIREBASE PARA O USUÁRIO
+            referenciaQuestionario.child(questionario.getId()).setValue(questionario)
+                    .addOnSuccessListener(aVoid -> Log.i("#SALVAR QUESTIONARIO", "OK"))
+                    .addOnFailureListener(e -> {
+                        msg("Erro ao salvar registros no Servidor! ERRO: " + e.getLocalizedMessage());
+                        Log.i("#SALVAR QUESTIONARIO", "ERRO");
+                    });
+
+            //SALVA O QUESTSQR20 SEM RESPOSTA COMPLETO NO FIREBASE PARA O USUÁRIO
+            for (Pergunta pergunta : listaDePerguntas) {
+                //Salvar no Firebase
+                referenciaQuestSQR20.child(idUsuario).child(String.valueOf(pergunta.getId()))
+                        .setValue(pergunta).addOnSuccessListener(aVoid -> {
+
+                    //Salvar nas Preferências
+                    Preferencias preferencias = new Preferencias(MainActivity.this);
+                    preferencias.salvarDados(null, null, listaDePerguntas, null, null, null);
+
+                    if (progressDialog.isShowing()) progressDialog.dismiss();
+
+                    Log.i("#SALVAR QUESTSQR20", "OK");
+                });
+            }
 
             //Salvar nas Preferências
             Preferencias preferencias = new Preferencias(MainActivity.this);
@@ -62,22 +114,51 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void carregarPreferencias() {
+        progressDialog = new SpotsDialog(this, "Carregando...", R.style.dialogEmpregosAL);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
         Preferencias preferencias = new Preferencias(MainActivity.this);
         if (preferencias.getIdUsuario() != null) idUsuario = preferencias.getIdUsuario();
 
-        referenciaQuestionario.orderByChild("id").equalTo(idUsuario).addListenerForSingleValueEvent(new ValueEventListener() {
+        referenciaQuestionario.orderByChild("id").equalTo(idUsuario);
+        valueEventListenerQuestionario = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot dados : dataSnapshot.getChildren()) {
                     questionario = dados.getValue(Questionario.class);
                 }
+
+                Log.i("#CARREGAR QUESTIONARIO", questionario != null ? "OK" : "ERRO");
+                if (progressDialog.isShowing()) progressDialog.dismiss();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
-        });
+        };
+    }
+
+    public void carregarComponentes() {
+        valueEventListenerListaQuestSQR20 = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                listaDePerguntas.clear();
+
+                for (DataSnapshot dados : dataSnapshot.getChildren()) {
+                    Pergunta pergunta = dados.getValue(Pergunta.class);
+                    listaDePerguntas.add(pergunta);
+                }
+
+                Log.i("#CARREGAR QUESTSQR20", listaDePerguntas.size() > 0 ? "OK" : "ERRO");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
     }
 
     private void msg(String texto) {

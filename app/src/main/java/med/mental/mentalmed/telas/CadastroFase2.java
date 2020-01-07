@@ -44,7 +44,7 @@ public class CadastroFase2 extends AppCompatActivity {
 
     private Questionario questionario;
     private List<Pergunta> resultadosSQR20;
-    private DatabaseReference referenciaQuestionario = ConfiguracaoFirebase.getFirebase().child("usuarios");
+    private DatabaseReference referenciaQuestionario = ConfiguracaoFirebase.getFirebase().child("questionario");
     private String idUsuario;
 
     @Override
@@ -99,8 +99,7 @@ public class CadastroFase2 extends AppCompatActivity {
 
         dadosAtualizar.put("respondido", questionario.isRespondido());
 
-        referenciaQuestionario.child(questionario.getId()).child("questionario")
-                .updateChildren(dadosAtualizar).addOnSuccessListener(aVoid -> {
+        referenciaQuestionario.child(questionario.getId()).updateChildren(dadosAtualizar).addOnSuccessListener(aVoid -> {
             //Salvar nas Preferências
             Preferencias preferencias = new Preferencias(CadastroFase2.this);
             preferencias.salvarDados(questionario.getId(), questionario, null, null, null, null);
