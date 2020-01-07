@@ -230,9 +230,9 @@ public class CadastroFase1 extends AppCompatActivity {
             et_renda.setText(String.valueOf(questionario.getRendaFamiliar()));
 
             rg_campo_religiao.check(questionario.isTemReligiao() ? R.id.rb_religao_sim : R.id.rb_religao_nao);
-
-            if (progressDialog.isShowing()) progressDialog.dismiss();
         }
+
+        if (progressDialog.isShowing()) progressDialog.dismiss();
     }
 
     private void bloquearComponentes() {

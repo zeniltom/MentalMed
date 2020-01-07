@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseReference referenciaListaQuestSQR20 = ConfiguracaoFirebase.getFirebase().child("perguntasSQR20");
 
     private Questionario questionario;
-    private List<Pergunta> listaDePerguntas = new ArrayList<>();
+    private List<Pergunta> questSRQ20 = new ArrayList<>();
 
     private String idUsuario = "";
     private String androidId = "";
@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
             questionario.setRespondido(false);
 
             //SALVA O QUESTIONÁRIO SEM RESPOSTA COMPLETO NO FIREBASE PARA O USUÁRIO
-            referenciaQuestionario.child(questionario.getId()).setValue(questionario)
+            referenciaQuestionario.child(androidId).setValue(questionario)
                     .addOnSuccessListener(aVoid -> Log.i("#SALVAR QUESTIONARIO", "OK"))
                     .addOnFailureListener(e -> {
                         msg("Erro ao salvar registros no Servidor! ERRO: " + e.getLocalizedMessage());
@@ -92,14 +92,10 @@ public class MainActivity extends AppCompatActivity {
                     });
 
             //SALVA O QUESTSQR20 SEM RESPOSTA COMPLETO NO FIREBASE PARA O USUÁRIO
-            for (Pergunta pergunta : listaDePerguntas) {
+            for (Pergunta pergunta : questSRQ20) {
                 //Salvar no Firebase
-                referenciaQuestSQR20.child(idUsuario).child(String.valueOf(pergunta.getId()))
+                referenciaQuestSQR20.child(androidId).child(String.valueOf(pergunta.getId()))
                         .setValue(pergunta).addOnSuccessListener(aVoid -> {
-
-                    //Salvar nas Preferências
-                    Preferencias preferencias = new Preferencias(MainActivity.this);
-                    preferencias.salvarDados(null, null, listaDePerguntas, null, null, null);
 
                     if (progressDialog.isShowing()) progressDialog.dismiss();
 
@@ -109,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
 
             //Salvar nas Preferências
             Preferencias preferencias = new Preferencias(MainActivity.this);
-            preferencias.salvarDados(questionario.getId(), questionario, null, null, null, null);
+            preferencias.salvarDados(androidId, questionario, questSRQ20, null, null, null);
         }
     }
 
@@ -144,14 +140,14 @@ public class MainActivity extends AppCompatActivity {
         valueEventListenerListaQuestSQR20 = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                listaDePerguntas.clear();
+                questSRQ20.clear();
 
                 for (DataSnapshot dados : dataSnapshot.getChildren()) {
                     Pergunta pergunta = dados.getValue(Pergunta.class);
-                    listaDePerguntas.add(pergunta);
+                    questSRQ20.add(pergunta);
                 }
 
-                Log.i("#CARREGAR QUESTSQR20", listaDePerguntas.size() > 0 ? "OK" : "ERRO");
+                Log.i("#CARREGAR QUESTSQR20", questSRQ20.size() > 0 ? "OK" : "ERRO");
             }
 
             @Override

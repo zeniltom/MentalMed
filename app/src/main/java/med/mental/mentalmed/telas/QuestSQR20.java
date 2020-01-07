@@ -57,14 +57,13 @@ public class QuestSQR20 extends AppCompatActivity {
     }
 
     private void salvarFirebase(List<Pergunta> resultadosSQR20) {
-
         for (Pergunta pergunta : resultadosSQR20) {
             //Salvar no Firebase
             referenciaQuestSQR20.child(idUsuario).child(String.valueOf(pergunta.getId()))
                     .setValue(pergunta).addOnSuccessListener(aVoid -> {
                 //Salvar nas Preferências
                 Preferencias preferencias = new Preferencias(QuestSQR20.this);
-                preferencias.salvarDados(null, null, resultadosSQR20, null, null, null);
+                preferencias.salvarSQR20(resultadosSQR20);
             });
         }
     }

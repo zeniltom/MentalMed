@@ -57,7 +57,7 @@ public class PerguntaAdapter extends BaseAdapter {
         //BLOQUEAR RESPOSTAS JÁ RESPONDIDAS NO SQR20
         for (int i = 0; i < radioGroup.getChildCount(); i++) {
             View radio = radioGroup.getChildAt(i);
-            if (pergunta.isMarcada() && pergunta.isResposta()) {
+            if (pergunta.isMarcada()) {
                 descricao.setTextColor(Color.LTGRAY);
                 radio.setEnabled(false);
             }
