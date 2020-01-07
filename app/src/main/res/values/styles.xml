@@ -9,4 +9,10 @@
         <item name="android:statusBarColor">?android:attr/colorForeground</item>
     </style>
 
+    <style name="dialogEmpregosAL" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="DialogTitleAppearance">@android:style/TextAppearance.Large</item>
+        <item name="DialogSpotColor">@color/colorPrimaryDark</item>
+        <item name="DialogSpotCount">8</item>
+    </style>
+
 </resources>
