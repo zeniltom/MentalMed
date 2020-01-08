@@ -23,38 +23,66 @@ import med.mental.mentalmed.R;
 import med.mental.mentalmed.config.ConfiguracaoFirebase;
 import med.mental.mentalmed.config.Preferencias;
 import med.mental.mentalmed.model.Pergunta;
+import med.mental.mentalmed.model.PerguntaAnsiedade;
+import med.mental.mentalmed.model.PerguntaBurnout;
+import med.mental.mentalmed.model.PerguntaDepressao;
+import med.mental.mentalmed.model.PerguntaDepressaoCat;
 import med.mental.mentalmed.model.Questionario;
+import med.mental.mentalmed.repository.Perguntas;
 
 public class MainActivity extends AppCompatActivity {
 
-    private DatabaseReference referenciaQuestionario = ConfiguracaoFirebase.getFirebase().child("questionario");
-    private DatabaseReference referenciaQuestSQR20 = ConfiguracaoFirebase.getFirebase().child("questionarioSQ20");
+    private SpotsDialog progressDialog;
 
-    private DatabaseReference referenciaListaQuestSQR20 = ConfiguracaoFirebase.getFirebase().child("perguntasSQR20");
+    private DatabaseReference refRespQuestionario = ConfiguracaoFirebase.getFirebase().child("questionario");
+    private DatabaseReference refRespQuestSQR20 = ConfiguracaoFirebase.getFirebase().child("questionarioSQ20");
+    private DatabaseReference refRespQuestAnsiedade = ConfiguracaoFirebase.getFirebase().child("questionarioAnsiedade");
+    private DatabaseReference refRespQuestDepressaoCat = ConfiguracaoFirebase.getFirebase().child("questionarioDepressaoCat");
+    private DatabaseReference refRespQuestDepressao = ConfiguracaoFirebase.getFirebase().child("questionarioDepressao");
+    private DatabaseReference refRespQuestSindromeBurnout = ConfiguracaoFirebase.getFirebase().child("questionarioSindromeBurnout");
+
+    private DatabaseReference refListQuestSQR20 = ConfiguracaoFirebase.getFirebase().child("perguntasSQR20");
+    private DatabaseReference refListQuestAnsiedade = ConfiguracaoFirebase.getFirebase().child("perguntasAnsiedade");
+    private DatabaseReference refListQuestDepressaoCat = ConfiguracaoFirebase.getFirebase().child("perguntasDepressaoCat");
+    private DatabaseReference refListQuestDepressao = ConfiguracaoFirebase.getFirebase().child("perguntasDepressao");
+    private DatabaseReference refListQuestSindromeBurnout = ConfiguracaoFirebase.getFirebase().child("perguntasSindromeBurnout");
 
     private Questionario questionario;
     private List<Pergunta> questSRQ20 = new ArrayList<>();
+    private List<PerguntaAnsiedade> questAnsiedade = new ArrayList<>();
+    private List<PerguntaDepressaoCat> questDepressaoCat = new ArrayList<>();
+    private List<PerguntaDepressao> questDepressao = new ArrayList<>();
+    private List<PerguntaBurnout> questSindromeBurnout = new ArrayList<>();
 
     private String idUsuario = "";
     private String androidId = "";
 
-    private SpotsDialog progressDialog;
-
     private ValueEventListener valueEventListenerQuestionario;
     private ValueEventListener valueEventListenerListaQuestSQR20;
+    private ValueEventListener valueEventListenerListaQuestAnsiedade;
+    private ValueEventListener valueEventListenerListaQuestDepressao;
+    private ValueEventListener valueEventListenerListaQuestDepressaoCat;
+    private ValueEventListener valueEventListenerListaQuestSindromeBurnout;
 
     @Override
     protected void onStart() {
         super.onStart();
-        referenciaQuestionario.addValueEventListener(valueEventListenerQuestionario);
-        referenciaListaQuestSQR20.addValueEventListener(valueEventListenerListaQuestSQR20);
+        refRespQuestionario.addValueEventListener(valueEventListenerQuestionario);
+        refListQuestSQR20.addValueEventListener(valueEventListenerListaQuestSQR20);
+        refListQuestAnsiedade.addValueEventListener(valueEventListenerListaQuestAnsiedade);
+        //refListQuestDepressao.addValueEventListener(valueEventListenerListaQuestDepressao);
+        refListQuestDepressaoCat.addValueEventListener(valueEventListenerListaQuestDepressaoCat);
+        refListQuestSindromeBurnout.addValueEventListener(valueEventListenerListaQuestSindromeBurnout);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        referenciaQuestionario.removeEventListener(valueEventListenerQuestionario);
-        referenciaListaQuestSQR20.removeEventListener(valueEventListenerListaQuestSQR20);
+        refRespQuestionario.removeEventListener(valueEventListenerQuestionario);
+        refListQuestSQR20.removeEventListener(valueEventListenerListaQuestSQR20);
+        refListQuestAnsiedade.removeEventListener(valueEventListenerListaQuestAnsiedade);
+//        refListQuestDepressao.removeEventListener(valueEventListenerListaQuestDepressao);
+        refListQuestSindromeBurnout.removeEventListener(valueEventListenerListaQuestSindromeBurnout);
     }
 
     @Override
@@ -73,7 +101,8 @@ public class MainActivity extends AppCompatActivity {
         carregarPreferencias();
         criarPreferencias();
 
-        Intent intent = new Intent(this, CadastroInicio.class);
+        Intent intent = new Intent(this, QuestDepressao.class);
+        //Intent intent = new Intent(this, CadastroInicio.class);
         startActivity(intent);
     }
 
@@ -84,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
             questionario.setRespondido(false);
 
             //SALVA O QUESTIONÁRIO SEM RESPOSTA COMPLETO NO FIREBASE PARA O USUÁRIO
-            referenciaQuestionario.child(androidId).setValue(questionario)
+            refRespQuestionario.child(androidId).setValue(questionario)
                     .addOnSuccessListener(aVoid -> Log.i("#SALVAR QUESTIONARIO", "OK"))
                     .addOnFailureListener(e -> {
                         msg("Erro ao salvar registros no Servidor! ERRO: " + e.getLocalizedMessage());
@@ -94,19 +123,40 @@ public class MainActivity extends AppCompatActivity {
             //SALVA O QUESTSQR20 SEM RESPOSTA COMPLETO NO FIREBASE PARA O USUÁRIO
             for (Pergunta pergunta : questSRQ20) {
                 //Salvar no Firebase
-                referenciaQuestSQR20.child(androidId).child(String.valueOf(pergunta.getId()))
-                        .setValue(pergunta).addOnSuccessListener(aVoid -> {
+                refRespQuestSQR20.child(androidId).child(String.valueOf(pergunta.getId()))
+                        .setValue(pergunta).addOnSuccessListener(aVoid -> Log.i("#SALVAR QUESTSQR20", "OK"));
+            }
 
-                    if (progressDialog.isShowing()) progressDialog.dismiss();
+            //SALVA O QUESTANSIEDADE SEM RESPOSTA COMPLETO NO FIREBASE PARA O USUÁRIO
+            for (PerguntaAnsiedade perguntaAnsiedade : questAnsiedade) {
+                //Salvar no Firebase
+                refRespQuestAnsiedade.child(androidId).child(String.valueOf(perguntaAnsiedade.getId()))
+                        .setValue(perguntaAnsiedade).addOnSuccessListener(aVoid -> Log.i("#SALVAR QUESTANSIEDADE", "OK"));
+            }
 
-                    Log.i("#SALVAR QUESTSQR20", "OK");
-                });
+            //SALVA O QUESTDEPRESSAO SEM RESPOSTA COMPLETO NO FIREBASE PARA O USUÁRIO
+            for (PerguntaDepressaoCat perguntaDepressaoCat : questDepressaoCat) {
+                //Salvar no Firebase
+                refRespQuestDepressaoCat.child(androidId).child(String.valueOf(perguntaDepressaoCat.getId()))
+                        .setValue(perguntaDepressaoCat).addOnSuccessListener(aVoid -> Log.i("#SALVAR QUESTDEPRESSAOCAT", "OK"));
+            }
+
+            Log.i("#RESULTCAT", questDepressaoCat.toString());
+
+
+            //SALVA O QUESTSINDROMEBURNOUT SEM RESPOSTA COMPLETO NO FIREBASE PARA O USUÁRIO
+            for (PerguntaBurnout perguntaBurnout : questSindromeBurnout) {
+                //Salvar no Firebase
+                refRespQuestSindromeBurnout.child(androidId).child(String.valueOf(perguntaBurnout.getId()))
+                        .setValue(perguntaBurnout).addOnSuccessListener(aVoid -> Log.i("#SALVAR QUESTSINDROMEBURNOUT", "OK"));
             }
 
             //Salvar nas Preferências
             Preferencias preferencias = new Preferencias(MainActivity.this);
-            preferencias.salvarDados(androidId, questionario, questSRQ20, null, null, null);
+            preferencias.salvarDados(androidId, questionario, questSRQ20, questAnsiedade, questDepressaoCat, questSindromeBurnout);
         }
+
+        if (progressDialog.isShowing()) progressDialog.dismiss();
     }
 
     private void carregarPreferencias() {
@@ -117,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
         Preferencias preferencias = new Preferencias(MainActivity.this);
         if (preferencias.getIdUsuario() != null) idUsuario = preferencias.getIdUsuario();
 
-        referenciaQuestionario.orderByChild("id").equalTo(idUsuario);
+        refRespQuestionario.orderByChild("id").equalTo(idUsuario);
         valueEventListenerQuestionario = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -155,6 +205,82 @@ public class MainActivity extends AppCompatActivity {
 
             }
         };
+
+        valueEventListenerListaQuestAnsiedade = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                questAnsiedade.clear();
+
+                for (DataSnapshot dados : dataSnapshot.getChildren()) {
+                    PerguntaAnsiedade perguntaAnsiedade = dados.getValue(PerguntaAnsiedade.class);
+                    questAnsiedade.add(perguntaAnsiedade);
+                }
+
+                Log.i("#CARREGAR QUESTANSIEDADE", questAnsiedade.size() > 0 ? "OK" : "ERRO");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+
+        valueEventListenerListaQuestDepressaoCat = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                questDepressaoCat.clear();
+
+                for (DataSnapshot dados : dataSnapshot.getChildren()) {
+                    PerguntaDepressaoCat perguntaDepressao = dados.getValue(PerguntaDepressaoCat.class);
+                    questDepressaoCat.add(perguntaDepressao);
+                }
+
+                Log.i("#CARREGAR QUESTDEPRESSAOCAT", questDepressao.size() > 0 ? "OK" : "ERRO");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+
+        valueEventListenerListaQuestSindromeBurnout = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                questSindromeBurnout.clear();
+
+                for (DataSnapshot dados : dataSnapshot.getChildren()) {
+                    PerguntaBurnout perguntaBurnout = dados.getValue(PerguntaBurnout.class);
+                    questSindromeBurnout.add(perguntaBurnout);
+                }
+
+                Log.i("#CARREGAR QUESTSINDROMEBURNOUT", questSindromeBurnout.size() > 0 ? "OK" : "ERRO");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+
+        ArrayList<PerguntaDepressaoCat> listaDePerguntas = new ArrayList<>();
+        listaDePerguntas.addAll(new Perguntas(this).todasCategoriasPergDepress());
+
+        for (int i = 0; i < listaDePerguntas.size(); i++) {
+            PerguntaDepressaoCat pdc = listaDePerguntas.get(i);
+
+            pdc.setPerguntasDeDepressao(new Perguntas(this).perguntaDepressaoPorCat(pdc.getId()));
+            listaDePerguntas.set(i, pdc);
+
+            for (PerguntaDepressao p : pdc.getPerguntasDeDepressao()) {
+                refListQuestDepressaoCat.child(String.valueOf(p.getId())).setValue(pdc);
+            }
+
+            for (PerguntaDepressao a : pdc.getPerguntasDeDepressao())
+                refListQuestDepressaoCat.child(pdc.getId().toString())
+                        .child("perguntasDeDepressao")
+                        .child(String.valueOf(a.getId())).setValue(a);
+        }
     }
 
     private void msg(String texto) {

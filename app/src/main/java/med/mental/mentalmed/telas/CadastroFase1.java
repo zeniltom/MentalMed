@@ -78,7 +78,6 @@ public class CadastroFase1 extends AppCompatActivity {
 
         carregarComponentes();
         carregarPreferencias();
-        bloquearComponentes();
 
         bt_proximo_fases.setOnClickListener(v -> avancarSQR20());
     }
@@ -91,7 +90,6 @@ public class CadastroFase1 extends AppCompatActivity {
             if (!questionario.isRespondido()) salvarFirebase();
 
             Intent intent = new Intent(this, QuestSQR20.class);
-            intent.putExtra("questionario", questionario);
             startActivity(intent);
         }
     }
@@ -120,7 +118,7 @@ public class CadastroFase1 extends AppCompatActivity {
         referenciaQuestionario.child(questionario.getId()).updateChildren(dadosAtualizar).addOnSuccessListener(aVoid -> {
             //Salvar nas Preferências
             Preferencias preferencias = new Preferencias(CadastroFase1.this);
-            preferencias.salvarDados(questionario.getId(), questionario, null, null, null, null);
+            preferencias.salvarQuestionario(questionario);
         });
     }
 
@@ -187,7 +185,7 @@ public class CadastroFase1 extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot dados : dataSnapshot.getChildren()) {
                     questionario = dados.getValue(Questionario.class);
-                    Log.i("#CARREGAR QUESTIONARIO", questionario.getId() != null ? "OK" : "ERRO");
+                    Log.i("#CARREGAR QUESTIONARIO FASE1", questionario.getId() != null ? "OK" : "ERRO");
                     carregarQuestionario(questionario);
                 }
             }
@@ -230,6 +228,8 @@ public class CadastroFase1 extends AppCompatActivity {
             et_renda.setText(String.valueOf(questionario.getRendaFamiliar()));
 
             rg_campo_religiao.check(questionario.isTemReligiao() ? R.id.rb_religao_sim : R.id.rb_religao_nao);
+
+            bloquearComponentes();
         }
 
         if (progressDialog.isShowing()) progressDialog.dismiss();

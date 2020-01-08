@@ -70,7 +70,7 @@ public class Perguntas {
             perguntaDepressaoCat = new PerguntaDepressaoCat();
 
             //ADICIONANDO OS DADOS DA PESSOA
-            perguntaDepressaoCat.setId(cursor.getInt(cursor.getColumnIndex("id")));
+            perguntaDepressaoCat.setId(cursor.getLong(cursor.getColumnIndex("id")));
             perguntaDepressaoCat.setDescricao(cursor.getString(cursor.getColumnIndex("descricao")));
 
             //ADICIONANDO UMA PESSOA NA LISTA
@@ -84,7 +84,7 @@ public class Perguntas {
         return listinha;
     }
 
-    public List<PerguntaDepressao> perguntaDepressaoPorCat(int id) {
+    public List<PerguntaDepressao> perguntaDepressaoPorCat(Long id) {
         List<PerguntaDepressao> listinha = new ArrayList<>();
 
         String stringBuilderQuery = "SELECT * FROM tb_depress_perg WHERE cat_perg_depress_id =" + id + "  ORDER BY cat_perg_depress_id, id";

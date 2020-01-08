@@ -2,11 +2,13 @@ package med.mental.mentalmed.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -37,12 +39,13 @@ public class PerguntaAnsiedadeAdapter extends BaseAdapter {
 
     @SuppressLint({"ViewHolder", "InflateParams"})
     @Override
-    public View getView(final int i, View view, ViewGroup viewGroup) {
+    public View getView(final int position, View view, ViewGroup viewGroup) {
         view = inflater.inflate(R.layout.item_pergunta_ansiedade, null);
 
-        final PerguntaAnsiedade perguntaAnsiedade = questoes.get(i);
+        final PerguntaAnsiedade perguntaAnsiedade = questoes.get(position);
 
         TextView descricao = view.findViewById(R.id.descricao);
+        RadioGroup radioGroup = view.findViewById(R.id.radio_group_ansiedade);
         RadioButton radio_0 = view.findViewById(R.id.radio_0);
         RadioButton radio_1 = view.findViewById(R.id.radio_1);
         RadioButton radio_2 = view.findViewById(R.id.radio_2);
@@ -56,12 +59,28 @@ public class PerguntaAnsiedadeAdapter extends BaseAdapter {
         radio_2.setChecked(perguntaAnsiedade.isMarcada() && perguntaAnsiedade.getResposta() == 2);
         radio_4.setChecked(perguntaAnsiedade.isMarcada() && perguntaAnsiedade.getResposta() == 4);
 
+        //BLOQUEAR RESPOSTAS JÁ RESPONDIDAS NO SQR20
+        for (int i = 0; i < radioGroup.getChildCount(); i++) {
+            View radio = radioGroup.getChildAt(i);
+            if (perguntaAnsiedade.isMarcada()) {
+                descricao.setTextColor(Color.GRAY);
+                if (perguntaAnsiedade.getResposta() == 0)
+                    radio.setEnabled(false);
+                else if (perguntaAnsiedade.getResposta() == 1)
+                    radio.setEnabled(false);
+                else if (perguntaAnsiedade.getResposta() == 2)
+                    radio.setEnabled(false);
+                else if (perguntaAnsiedade.getResposta() == 4)
+                    radio.setEnabled(false);
+            }
+        }
+
         radio_0.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
             if (isChecked) {
                 perguntaAnsiedade.setResposta(0);
                 perguntaAnsiedade.setMarcada(true);
-                resultados.set(i, perguntaAnsiedade);
+                resultados.set(position, perguntaAnsiedade);
             }
         });
 
@@ -70,7 +89,7 @@ public class PerguntaAnsiedadeAdapter extends BaseAdapter {
             if (isChecked) {
                 perguntaAnsiedade.setResposta(1);
                 perguntaAnsiedade.setMarcada(true);
-                resultados.set(i, perguntaAnsiedade);
+                resultados.set(position, perguntaAnsiedade);
             }
         });
 
@@ -78,7 +97,7 @@ public class PerguntaAnsiedadeAdapter extends BaseAdapter {
             if (isChecked) {
                 perguntaAnsiedade.setResposta(2);
                 perguntaAnsiedade.setMarcada(true);
-                resultados.set(i, perguntaAnsiedade);
+                resultados.set(position, perguntaAnsiedade);
             }
         });
 
@@ -86,7 +105,7 @@ public class PerguntaAnsiedadeAdapter extends BaseAdapter {
             if (isChecked) {
                 perguntaAnsiedade.setResposta(4);
                 perguntaAnsiedade.setMarcada(true);
-                resultados.set(i, perguntaAnsiedade);
+                resultados.set(position, perguntaAnsiedade);
             }
         });
 

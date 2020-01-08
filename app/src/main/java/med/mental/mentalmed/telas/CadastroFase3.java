@@ -2,6 +2,7 @@ package med.mental.mentalmed.telas;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,17 +17,13 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
 
-import java.io.Serializable;
 import java.util.HashMap;
-import java.util.List;
 
+import dmax.dialog.SpotsDialog;
 import med.mental.mentalmed.R;
 import med.mental.mentalmed.config.ConfiguracaoFirebase;
 import med.mental.mentalmed.config.Preferencias;
-import med.mental.mentalmed.model.Pergunta;
-import med.mental.mentalmed.model.PerguntaAnsiedade;
 import med.mental.mentalmed.model.Questionario;
 
 public class CadastroFase3 extends AppCompatActivity {
@@ -41,35 +38,33 @@ public class CadastroFase3 extends AppCompatActivity {
     private RadioGroup radio_group_drogas;
 
     private Button bt_proximo_1;
+    private SpotsDialog progressDialog;
 
-    private List<Pergunta> resultadosSQR20;
-    private List<PerguntaAnsiedade> resultadosQuestAnsiedade;
-
-    private String nivelAnsiedade;
-    private int resultadosAnsiedade;
-
-    private Questionario questionario;
     private DatabaseReference referenciaQuestionario = ConfiguracaoFirebase.getFirebase().child("questionario");
+    private Questionario questionario = new Questionario();
     private String idUsuario;
+
+    private ValueEventListener valueEventListenerQuestionario;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        referenciaQuestionario.addValueEventListener(valueEventListenerQuestionario);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        referenciaQuestionario.removeEventListener(valueEventListenerQuestionario);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cadastro_fase_3);
 
-        resultadosSQR20 = (List<Pergunta>) getIntent().getSerializableExtra("resultadosSQR20");
-        resultadosQuestAnsiedade = (List<PerguntaAnsiedade>) getIntent().getSerializableExtra("resultadosQuestAnsiedade");
-
-        Bundle bundle = getIntent().getExtras();
-        if (bundle != null) {
-            nivelAnsiedade = bundle.getString("nivelAnsiedade");
-            resultadosAnsiedade = bundle.getInt("resultadosAnsiedade");
-        }
-
         carregarComponentes();
-        carregarDados();
         carregarPreferencias();
-        bloquearComponentes();
 
         bt_proximo_1.setOnClickListener(v -> avancarDepressao());
     }
@@ -82,11 +77,6 @@ public class CadastroFase3 extends AppCompatActivity {
             if (!questionario.isRespondido()) salvarFirebase();
 
             Intent intent = new Intent(this, QuestDepressao.class);
-            intent.putExtra("questionario", this.questionario);
-            intent.putExtra("resultadosSQR20", (Serializable) resultadosSQR20);
-            intent.putExtra("resultadosQuestAnsiedade", (Serializable) resultadosQuestAnsiedade);
-            intent.putExtra("nivelAnsiedade", nivelAnsiedade);
-            intent.putExtra("resultadosAnsiedade", resultadosAnsiedade);
             startActivity(intent);
         }
     }
@@ -123,7 +113,7 @@ public class CadastroFase3 extends AppCompatActivity {
         referenciaQuestionario.child(questionario.getId()).updateChildren(dadosAtualizar).addOnSuccessListener(aVoid -> {
             //Salvar nas Preferências
             Preferencias preferencias = new Preferencias(CadastroFase3.this);
-            preferencias.salvarDados(questionario.getId(), questionario, null, null, null, null);
+            preferencias.salvarQuestionario(questionario);
         });
     }
 
@@ -143,6 +133,10 @@ public class CadastroFase3 extends AppCompatActivity {
     }
 
     private void carregarComponentes() {
+        progressDialog = new SpotsDialog(this, "Carregando...", R.style.dialogEmpregosAL);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
         constraintLayout = findViewById(R.id.constraintLayout);
 
         bt_proximo_1 = findViewById(R.id.bt_proximo_1);
@@ -155,25 +149,17 @@ public class CadastroFase3 extends AppCompatActivity {
         radio_group_drogas = findViewById(R.id.radio_group_drogas);
     }
 
-    private void carregarDados() {
-        Preferencias preferencias = new Preferencias(CadastroFase3.this);
-        Gson gson = new Gson();
-
-        if (preferencias.getIdUsuario() != null) {
-            String objeto = preferencias.getQuestionario();
-            questionario = gson.fromJson(objeto, Questionario.class);
-        }
-    }
-
     private void carregarPreferencias() {
         Preferencias preferencias = new Preferencias(CadastroFase3.this);
         if (preferencias.getIdUsuario() != null) idUsuario = preferencias.getIdUsuario();
 
-        referenciaQuestionario.child(idUsuario).addListenerForSingleValueEvent(new ValueEventListener() {
+        referenciaQuestionario.orderByChild("id").equalTo(idUsuario);
+        valueEventListenerQuestionario = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot dados : dataSnapshot.getChildren()) {
                     questionario = dados.getValue(Questionario.class);
+                    Log.i("#CARREGAR QUESTIONARIO FASE3", questionario.getId() != null ? "OK" : "ERRO");
                     carregarQuestionario(questionario);
                 }
             }
@@ -182,7 +168,7 @@ public class CadastroFase3 extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
-        });
+        };
     }
 
     private void carregarQuestionario(Questionario questionario) {
@@ -200,7 +186,11 @@ public class CadastroFase3 extends AppCompatActivity {
             radio_group_drogas.check(questionario.isEstudaFimDeSemana() ? R.id.rb_drogas_sim : R.id.rb_drogas_nao);
 
             et_lazer_horas.setText(String.valueOf(questionario.getHorasLazerSemanalmente()));
+
+            bloquearComponentes();
         }
+
+        if (progressDialog.isShowing()) progressDialog.dismiss();
     }
 
     private void bloquearComponentes() {
@@ -220,29 +210,6 @@ public class CadastroFase3 extends AppCompatActivity {
     }
 
     private void coletarRespostas() {
-//        int checkedRadioButtonId = radio_group_fumo.getCheckedRadioButtonId();
-//        if (checkedRadioButtonId == R.id.rb_fumo_sim) questionario.setFuma(true);
-//        else if (checkedRadioButtonId == R.id.rb_fumo_nao)
-//            questionario.setFuma(false);
-//
-//        int radioButtonId = radio_group_bebida.getCheckedRadioButtonId();
-//        if (radioButtonId == R.id.rb_bebida_sim)
-//            questionario.setConsomeBebibaAlcoolica(true);
-//        else if (radioButtonId == R.id.rb_bebida_nao)
-//            questionario.setConsomeBebibaAlcoolica(false);
-//
-//        int buttonId = radio_group_atividade.getCheckedRadioButtonId();
-//        if (buttonId == R.id.rb_atividade_sim)
-//            questionario.setFuma(true);
-//        else if (buttonId == R.id.rb_atividade_nao)
-//            questionario.setFuma(false);
-//
-//        int id = radio_group_drogas.getCheckedRadioButtonId();
-//        if (id == R.id.rb_drogas_sim)
-//            questionario.setConsomeDrogasIlicitas(true);
-//        else if (id == R.id.rb_drogas_nao)
-//            questionario.setConsomeDrogasIlicitas(false);
-
         questionario.setFuma(radio_group_fumo.getCheckedRadioButtonId() == R.id.rb_fumo_sim);
         questionario.setConsomeBebibaAlcoolica(radio_group_bebida.getCheckedRadioButtonId() == R.id.rb_bebida_sim);
         questionario.setPraticaAtividadeFisica(radio_group_atividade.getCheckedRadioButtonId() == R.id.rb_atividade_sim);

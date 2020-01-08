@@ -51,6 +51,7 @@ public class PerguntaAdapter extends BaseAdapter {
 
         descricao.setText(pergunta.getDescricao());
 
+        //MANTER ESTADO DOS ITENS
         radio_sim.setChecked(pergunta.isMarcada() && pergunta.isResposta());
         radio_nao.setChecked(pergunta.isMarcada() && !pergunta.isResposta());
 
@@ -58,7 +59,7 @@ public class PerguntaAdapter extends BaseAdapter {
         for (int i = 0; i < radioGroup.getChildCount(); i++) {
             View radio = radioGroup.getChildAt(i);
             if (pergunta.isMarcada()) {
-                descricao.setTextColor(Color.LTGRAY);
+                descricao.setTextColor(Color.GRAY);
                 radio.setEnabled(false);
             }
         }

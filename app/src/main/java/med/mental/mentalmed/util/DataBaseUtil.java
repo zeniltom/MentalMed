@@ -26,7 +26,7 @@ public class DataBaseUtil extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
 
         String criarTabelaCatDepresPer = "CREATE TABLE tb_cat_depress_perg (" +
-                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "id LONG PRIMARY KEY AUTOINCREMENT, " +
                 "descricao TEXT NOT NULL)";
         db.execSQL(criarTabelaCatDepresPer);
 

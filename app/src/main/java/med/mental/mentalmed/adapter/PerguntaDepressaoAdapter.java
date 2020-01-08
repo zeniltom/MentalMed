@@ -2,6 +2,7 @@ package med.mental.mentalmed.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,7 +36,7 @@ public class PerguntaDepressaoAdapter extends BaseAdapter {
     public View getView(final int posicao, View view, ViewGroup viewGroup) {
         view = inflater.inflate(R.layout.item_pergunta_depressao, null);
 
-        PerguntaDepressaoCat p = questoes.get(posicao);
+        PerguntaDepressaoCat pdCategoria = questoes.get(posicao);
 
         TextView categoria_depress = view.findViewById(R.id.categoria_depress);
         RadioGroup radio_group_depressao = view.findViewById(R.id.radio_group_depressao);
@@ -44,18 +45,18 @@ public class PerguntaDepressaoAdapter extends BaseAdapter {
         RadioButton radio_2 = view.findViewById(R.id.radio_2);
         RadioButton radio_3 = view.findViewById(R.id.radio_3);
 
-        categoria_depress.setText(p.getDescricao());
+        categoria_depress.setText(pdCategoria.getDescricao());
 
-        radio_0.setText(descricaoDaAlternativa(p, 0));
-        radio_1.setText(descricaoDaAlternativa(p, 1));
-        radio_2.setText(descricaoDaAlternativa(p, 2));
-        radio_3.setText(descricaoDaAlternativa(p, 3));
+        radio_0.setText(descricaoDaAlternativa(pdCategoria, 0));
+        radio_1.setText(descricaoDaAlternativa(pdCategoria, 1));
+        radio_2.setText(descricaoDaAlternativa(pdCategoria, 2));
+        radio_3.setText(descricaoDaAlternativa(pdCategoria, 3));
 
         //COLOCAR OS OBJETOS PERGUNTASDEPRESSAO NOS RADIOS BUTTONS
-        radio_0.setTag(p.getPerguntasDeDepressao().get(0));
-        radio_1.setTag(p.getPerguntasDeDepressao().get(1));
-        radio_2.setTag(p.getPerguntasDeDepressao().get(2));
-        radio_3.setTag(p.getPerguntasDeDepressao().get(3));
+        radio_0.setTag(pdCategoria.getPerguntasDeDepressao().get(0));
+        radio_1.setTag(pdCategoria.getPerguntasDeDepressao().get(1));
+        radio_2.setTag(pdCategoria.getPerguntasDeDepressao().get(2));
+        radio_3.setTag(pdCategoria.getPerguntasDeDepressao().get(3));
 
         //MANTEM O ESTADO DOS ITENS
         radio_0.setChecked(isAltervativaMarcada(radio_0, 0));
@@ -63,10 +64,21 @@ public class PerguntaDepressaoAdapter extends BaseAdapter {
         radio_2.setChecked(isAltervativaMarcada(radio_2, 2));
         radio_3.setChecked(isAltervativaMarcada(radio_3, 3));
 
-        radio_0.setOnCheckedChangeListener((compoundButton, b) -> marcarAlternativa(p, radio_0, 0));
-        radio_1.setOnCheckedChangeListener((compoundButton, b) -> marcarAlternativa(p, radio_1, 1));
-        radio_2.setOnCheckedChangeListener((compoundButton, b) -> marcarAlternativa(p, radio_2, 2));
-        radio_3.setOnCheckedChangeListener((compoundButton, b) -> marcarAlternativa(p, radio_3, 3));
+        //BLOQUEAR RESPOSTAS JÁ RESPONDIDAS NO QUESTDEPRESS
+        for (int i = 0; i < radio_group_depressao.getChildCount(); i++) {
+            View radio = radio_group_depressao.getChildAt(i);
+            for (PerguntaDepressao perg : pdCategoria.getPerguntasDeDepressao()) {
+                if (perg.isMarcada()) {
+                    categoria_depress.setTextColor(Color.GRAY);
+                    radio.setEnabled(false);
+                }
+            }
+        }
+
+        radio_0.setOnCheckedChangeListener((compoundButton, b) -> marcarAlternativa(pdCategoria, radio_0, 0));
+        radio_1.setOnCheckedChangeListener((compoundButton, b) -> marcarAlternativa(pdCategoria, radio_1, 1));
+        radio_2.setOnCheckedChangeListener((compoundButton, b) -> marcarAlternativa(pdCategoria, radio_2, 2));
+        radio_3.setOnCheckedChangeListener((compoundButton, b) -> marcarAlternativa(pdCategoria, radio_3, 3));
 
         radio_group_depressao.setOnCheckedChangeListener(this::verificarAlternativaMarcada);
 

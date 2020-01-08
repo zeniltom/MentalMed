@@ -5,7 +5,7 @@ import java.util.List;
 
 public class PerguntaDepressaoCat implements Serializable {
 
-    private int id;
+    private Long id;
     private String descricao;
     private List<PerguntaDepressao> perguntasDeDepressao;
 
@@ -15,14 +15,14 @@ public class PerguntaDepressaoCat implements Serializable {
 
     @Override
     public String toString() {
-        return id + " " + descricao;
+        return id + " " + descricao + " RESPOSTAS: {" + perguntasDeDepressao.toString() + "}";
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

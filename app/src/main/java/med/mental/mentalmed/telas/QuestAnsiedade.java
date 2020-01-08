@@ -6,45 +6,42 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.io.Serializable;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import dmax.dialog.SpotsDialog;
 import med.mental.mentalmed.R;
 import med.mental.mentalmed.adapter.PerguntaAnsiedadeAdapter;
-import med.mental.mentalmed.model.Pergunta;
+import med.mental.mentalmed.config.ConfiguracaoFirebase;
+import med.mental.mentalmed.config.Preferencias;
 import med.mental.mentalmed.model.PerguntaAnsiedade;
-import med.mental.mentalmed.model.Questionario;
-import med.mental.mentalmed.repository.Perguntas;
 
 public class QuestAnsiedade extends AppCompatActivity {
 
-    private List<Pergunta> resultadosSQR20;
-    private final List<PerguntaAnsiedade> listaDePerguntas = new ArrayList<>();
+    private ListView lista_perguntas_ansiedade;
+    private SpotsDialog progressDialog;
 
-    private Questionario questionario;
+    private final List<PerguntaAnsiedade> listaDePerguntas = new ArrayList<>();
+    private PerguntaAnsiedadeAdapter adapter;
+
+    private DatabaseReference referenciaQuestAnsiedade = ConfiguracaoFirebase.getFirebase().child("questionarioAnsiedade");
+    private String idUsuario = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quest_ansiedade);
 
-        questionario = (Questionario) getIntent().getSerializableExtra("questionario");
-        resultadosSQR20 = (List<Pergunta>) getIntent().getSerializableExtra("resultadosSQR20");
-
-        Perguntas perguntas = new Perguntas(this);
-        for (String descricao : perguntas.perguntasAnsiedade(this)) {
-            PerguntaAnsiedade p = new PerguntaAnsiedade();
-            p.setDescricao(descricao);
-            listaDePerguntas.add(p);
-        }
-
-        ListView lista_perguntas_ansiedade = findViewById(R.id.lista_perguntas_ansiedade);
-
-        PerguntaAnsiedadeAdapter adapter = new PerguntaAnsiedadeAdapter(getApplicationContext(), listaDePerguntas);
-        lista_perguntas_ansiedade.setAdapter(adapter);
+        carregarComponentes();
+        carregarPreferencias();
     }
 
     public void avancarFase3(View view) {
@@ -53,13 +50,24 @@ public class QuestAnsiedade extends AppCompatActivity {
         int resultadosAnsiedade = verificarResultados(resultadosQuestAnsiedade);
         String nivelAnsiedade = nivelDeAnsiedade(resultadosAnsiedade);
 
+        Log.i("#", nivelAnsiedade);
+
+        salvarFirebase(resultadosQuestAnsiedade);
+
         Intent intent = new Intent(this, CadastroFase3.class);
-        intent.putExtra("questionario", questionario);
-        intent.putExtra("resultadosSQR20", (Serializable) resultadosSQR20);
-        intent.putExtra("resultadosQuestAnsiedade", (Serializable) resultadosQuestAnsiedade);
-        intent.putExtra("nivelAnsiedade", nivelAnsiedade);
-        intent.putExtra("resultadosAnsiedade", resultadosAnsiedade);
         startActivity(intent);
+    }
+
+    private void salvarFirebase(List<PerguntaAnsiedade> resultadosQuestAnsiedade) {
+        for (PerguntaAnsiedade perguntaAnsiedade : resultadosQuestAnsiedade) {
+            //Salvar no Firebase
+            referenciaQuestAnsiedade.child(idUsuario).child(String.valueOf(perguntaAnsiedade.getId()))
+                    .setValue(perguntaAnsiedade).addOnSuccessListener(aVoid -> {
+                //Salvar nas Preferências
+                Preferencias preferencias = new Preferencias(QuestAnsiedade.this);
+                preferencias.salvarAnsiedade(resultadosQuestAnsiedade);
+            });
+        }
     }
 
     /***
@@ -91,5 +99,41 @@ public class QuestAnsiedade extends AppCompatActivity {
         return resultado;
     }
 
+    private void carregarComponentes() {
+        progressDialog = new SpotsDialog(this, "Carregando...", R.style.dialogEmpregosAL);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
 
+        lista_perguntas_ansiedade = findViewById(R.id.lista_perguntas_ansiedade);
+    }
+
+    private void carregarPreferencias() {
+        Preferencias preferencias = new Preferencias(QuestAnsiedade.this);
+        if (preferencias.getIdUsuario() != null) idUsuario = preferencias.getIdUsuario();
+
+        referenciaQuestAnsiedade.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                listaDePerguntas.clear();
+
+                for (DataSnapshot dados : dataSnapshot.child(idUsuario).getChildren()) {
+                    PerguntaAnsiedade perguntaAnsiedade = dados.getValue(PerguntaAnsiedade.class);
+                    listaDePerguntas.add(perguntaAnsiedade);
+                }
+
+                adapter = new PerguntaAnsiedadeAdapter(getApplicationContext(), listaDePerguntas);
+                lista_perguntas_ansiedade.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+
+                Log.i("#CARREGAR QUESTANSIEDADE ACTIVITY", listaDePerguntas.size() > 0 ? "OK" : "ERRO");
+
+                if (progressDialog.isShowing()) progressDialog.dismiss();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
 }

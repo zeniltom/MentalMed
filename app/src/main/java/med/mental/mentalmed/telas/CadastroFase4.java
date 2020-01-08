@@ -2,6 +2,7 @@ package med.mental.mentalmed.telas;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RadioGroup;
@@ -14,18 +15,13 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
 
-import java.io.Serializable;
 import java.util.HashMap;
-import java.util.List;
 
+import dmax.dialog.SpotsDialog;
 import med.mental.mentalmed.R;
 import med.mental.mentalmed.config.ConfiguracaoFirebase;
 import med.mental.mentalmed.config.Preferencias;
-import med.mental.mentalmed.model.Pergunta;
-import med.mental.mentalmed.model.PerguntaAnsiedade;
-import med.mental.mentalmed.model.PerguntaDepressao;
 import med.mental.mentalmed.model.Questionario;
 
 public class CadastroFase4 extends AppCompatActivity {
@@ -37,40 +33,33 @@ public class CadastroFase4 extends AppCompatActivity {
     private RadioGroup radio_group_medicamento;
 
     private Button bt_proximo_1;
+    private SpotsDialog progressDialog;
 
-    private List<Pergunta> resultadosSQR20;
-    private List<PerguntaAnsiedade> resultadosQuestAnsiedade;
-    private List<PerguntaDepressao> resultadosQuestDepressao;
-    private String nivelAnsiedade;
-    private int resultadosAnsiedade;
-    private String nivelDepressao;
-    private int resultadosDepressao;
-
-    private Questionario questionario;
     private DatabaseReference referenciaQuestionario = ConfiguracaoFirebase.getFirebase().child("questionario");
+    private Questionario questionario = new Questionario();
     private String idUsuario;
+
+    private ValueEventListener valueEventListenerQuestionario;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        referenciaQuestionario.addValueEventListener(valueEventListenerQuestionario);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        referenciaQuestionario.removeEventListener(valueEventListenerQuestionario);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cadastro_fase_4);
 
-        resultadosSQR20 = (List<Pergunta>) getIntent().getSerializableExtra("resultadosSQR20");
-        resultadosQuestAnsiedade = (List<PerguntaAnsiedade>) getIntent().getSerializableExtra("resultadosQuestAnsiedade");
-        resultadosQuestDepressao = (List<PerguntaDepressao>) getIntent().getSerializableExtra("resultadosQuestDepressao");
-
-        Bundle bundle = getIntent().getExtras();
-        if (bundle != null) {
-            nivelAnsiedade = bundle.getString("nivelAnsiedade");
-            resultadosAnsiedade = bundle.getInt("resultadosAnsiedade");
-            nivelDepressao = bundle.getString("nivelDepressao");
-            resultadosDepressao = bundle.getInt("resultadosDepressao");
-        }
-
         carregarComponentes();
-        carregarDados();
         carregarPreferencias();
-        bloquearComponentes();
 
         bt_proximo_1.setOnClickListener(v -> avancarSindromeBurnout());
     }
@@ -84,14 +73,6 @@ public class CadastroFase4 extends AppCompatActivity {
         }
 
         Intent intent = new Intent(this, QuestSindromeBurnout.class);
-        intent.putExtra("questionario", this.questionario);
-        intent.putExtra("resultadosSQR20", (Serializable) resultadosSQR20);
-        intent.putExtra("resultadosQuestAnsiedade", (Serializable) resultadosQuestAnsiedade);
-        intent.putExtra("resultadosQuestDepressao", (Serializable) resultadosQuestDepressao);
-        intent.putExtra("nivelAnsiedade", nivelAnsiedade);
-        intent.putExtra("resultadosAnsiedade", resultadosAnsiedade);
-        intent.putExtra("nivelDepressao", nivelDepressao);
-        intent.putExtra("resultadosDepressao", resultadosDepressao);
         startActivity(intent);
     }
 
@@ -127,11 +108,15 @@ public class CadastroFase4 extends AppCompatActivity {
         referenciaQuestionario.child(questionario.getId()).updateChildren(dadosAtualizar).addOnSuccessListener(aVoid -> {
             //Salvar nas Preferências
             Preferencias preferencias = new Preferencias(CadastroFase4.this);
-            preferencias.salvarDados(questionario.getId(), questionario, null, null, null, null);
+            preferencias.salvarQuestionario(questionario);
         });
     }
 
     private void carregarComponentes() {
+        progressDialog = new SpotsDialog(this, "Carregando...", R.style.dialogEmpregosAL);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
         constraintLayout = findViewById(R.id.constraintLayout);
 
         bt_proximo_1 = findViewById(R.id.bt_proximo_1);
@@ -141,25 +126,17 @@ public class CadastroFase4 extends AppCompatActivity {
         radio_group_medicamento = findViewById(R.id.radio_group_medicamento);
     }
 
-    private void carregarDados() {
-        Preferencias preferencias = new Preferencias(CadastroFase4.this);
-        Gson gson = new Gson();
-
-        if (preferencias.getIdUsuario() != null) {
-            String objeto = preferencias.getQuestionario();
-            questionario = gson.fromJson(objeto, Questionario.class);
-        }
-    }
-
     private void carregarPreferencias() {
         Preferencias preferencias = new Preferencias(CadastroFase4.this);
         if (preferencias.getIdUsuario() != null) idUsuario = preferencias.getIdUsuario();
 
-        referenciaQuestionario.child(idUsuario).addListenerForSingleValueEvent(new ValueEventListener() {
+        referenciaQuestionario.orderByChild("id").equalTo(idUsuario);
+        valueEventListenerQuestionario = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot dados : dataSnapshot.getChildren()) {
                     questionario = dados.getValue(Questionario.class);
+                    Log.i("#CARREGAR QUESTIONARIO FASE4", questionario.getId() != null ? "OK" : "ERRO");
                     carregarQuestionario(questionario);
                 }
             }
@@ -168,7 +145,7 @@ public class CadastroFase4 extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
-        });
+        };
     }
 
     private void carregarQuestionario(Questionario questionario) {
@@ -183,7 +160,11 @@ public class CadastroFase4 extends AppCompatActivity {
             radio_group_acompanhamento.check(questionario.isRecebeAcompanhamentoPsicologico() ? R.id.rb_acomp_sim : R.id.rb_acomp_nao);
             radio_group_ness_acomp.check(questionario.isTemNecessidadeAcompanhamentoPsicologico() ? R.id.rb_ness_acomp_sim : R.id.rb_ness_acomp_nao);
             radio_group_medicamento.check(questionario.isUsaMedicamentoPrescrito() ? R.id.rb_medicamento_sim : R.id.rb_medicamento_nao);
+
+            bloquearComponentes();
         }
+
+        if (progressDialog.isShowing()) progressDialog.dismiss();
     }
 
     private void bloquearComponentes() {
@@ -202,22 +183,8 @@ public class CadastroFase4 extends AppCompatActivity {
     }
 
     private void coletarRespostas() {
-        int radioButtonId = radio_group_acompanhamento.getCheckedRadioButtonId();
-        if (radioButtonId == R.id.rb_acomp_sim)
-            questionario.setRecebeAcompanhamentoPsicologico(true);
-        else if (radioButtonId == R.id.rb_acomp_nao)
-            questionario.setRecebeAcompanhamentoPsicologico(false);
-
-        int checkedRadioButtonId = radio_group_ness_acomp.getCheckedRadioButtonId();
-        if (checkedRadioButtonId == R.id.rb_ness_acomp_sim)
-            questionario.setTemNecessidadeAcompanhamentoPsicologico(true);
-        else if (checkedRadioButtonId == R.id.rb_ness_acomp_nao)
-            questionario.setTemNecessidadeAcompanhamentoPsicologico(false);
-
-
-        int buttonId = radio_group_medicamento.getCheckedRadioButtonId();
-        if (buttonId == R.id.rb_medicamento_sim) questionario.setUsaMedicamentoPrescrito(true);
-        else if (buttonId == R.id.rb_medicamento_nao)
-            questionario.setUsaMedicamentoPrescrito(false);
+        questionario.setRecebeAcompanhamentoPsicologico(radio_group_acompanhamento.getCheckedRadioButtonId() == R.id.rb_acomp_sim);
+        questionario.setTemNecessidadeAcompanhamentoPsicologico(radio_group_ness_acomp.getCheckedRadioButtonId() == R.id.rb_ness_acomp_sim);
+        questionario.setUsaMedicamentoPrescrito(radio_group_medicamento.getCheckedRadioButtonId() == R.id.rb_medicamento_sim);
     }
 }

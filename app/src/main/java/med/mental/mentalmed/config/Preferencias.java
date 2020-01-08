@@ -2,12 +2,17 @@ package med.mental.mentalmed.config;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.google.gson.Gson;
 
 import java.util.List;
 
 import med.mental.mentalmed.model.Pergunta;
+import med.mental.mentalmed.model.PerguntaAnsiedade;
+import med.mental.mentalmed.model.PerguntaBurnout;
+import med.mental.mentalmed.model.PerguntaDepressao;
+import med.mental.mentalmed.model.Questionario;
 
 public class Preferencias {
 
@@ -32,6 +37,7 @@ public class Preferencias {
 
     public void salvarDados(String idUsuario, Object questionario, Object questSRQ20, Object questAnsiedade, Object questDepressao, Object questSindromeBurnout) {
         gson = new Gson();
+        String resultado = "";
 
         String questionarioJson = gson.toJson(questionario);
         String questSRQ20Json = gson.toJson(questSRQ20);
@@ -45,6 +51,16 @@ public class Preferencias {
         editor.putString(CHAVE_QUESTANSIEDADE, questAnsiedadeJson);
         editor.putString(CHAVE_QUESTDEPRESSAO, questDepressaoJson);
         editor.putString(CHAVE_QUESTSINDROMEBURNOUT, questSindromeBurnoutJson);
+
+        resultado = editor.commit() ? "SALVAR NAS PREFERÊNCIAS: OK" : "SALVAR NAS PREFERÊNCIAS: ERRO";
+
+        Log.i("#", resultado);
+    }
+
+    public void salvarQuestionario(Questionario questionario) {
+        gson = new Gson();
+        String questionarioJson = gson.toJson(questionario);
+        editor.putString(CHAVE_QUESTIONARIO, questionarioJson);
         editor.commit();
     }
 
@@ -55,21 +71,21 @@ public class Preferencias {
         editor.commit();
     }
 
-    public void salvarAnsiedade(List<Pergunta> questAnsiedade) {
+    public void salvarAnsiedade(List<PerguntaAnsiedade> questAnsiedade) {
         gson = new Gson();
         String questAnsiedadeJson = gson.toJson(questAnsiedade);
         editor.putString(CHAVE_QUESTANSIEDADE, questAnsiedadeJson);
         editor.commit();
     }
 
-    public void salvarDepressao(List<Pergunta> questDepressao) {
+    public void salvarDepressao(List<PerguntaDepressao> questDepressao) {
         gson = new Gson();
         String questDepressaoJson = gson.toJson(questDepressao);
         editor.putString(CHAVE_QUESTDEPRESSAO, questDepressaoJson);
         editor.commit();
     }
 
-    public void salvarSindromeBurnout(List<Pergunta> questSindromeBurnout) {
+    public void salvarSindromeBurnout(List<PerguntaBurnout> questSindromeBurnout) {
         gson = new Gson();
         String questSindromeBurnoutJson = gson.toJson(questSindromeBurnout);
         editor.putString(CHAVE_QUESTSINDROMEBURNOUT, questSindromeBurnoutJson);

@@ -26,13 +26,14 @@ import med.mental.mentalmed.model.Pergunta;
 
 public class QuestSQR20 extends AppCompatActivity {
 
+    private ListView lista_perguntas;
+    private SpotsDialog progressDialog;
 
     private final List<Pergunta> listaDePerguntas = new ArrayList<>();
     private PerguntaAdapter adapter;
+
     private DatabaseReference referenciaQuestSQR20 = ConfiguracaoFirebase.getFirebase().child("questionarioSQ20");
-    private ListView lista_perguntas;
     private String idUsuario = "";
-    private SpotsDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,10 +50,10 @@ public class QuestSQR20 extends AppCompatActivity {
         salvarFirebase(resultadosSQR20);
         if (temSofrimentoMental(resultadosSQR20)) {
             Intent intent = new Intent(this, SaudeMentalRuim.class);
-            //startActivity(intent);
+            startActivity(intent);
         } else {
             Intent intent = new Intent(this, SaudeMentalBoa.class);
-            //startActivity(intent);
+            startActivity(intent);
         }
     }
 
@@ -109,7 +110,7 @@ public class QuestSQR20 extends AppCompatActivity {
                 lista_perguntas.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
 
-                Log.i("#CARREGAR QUESTSQR20", listaDePerguntas.size() > 0 ? "OK" : "ERRO");
+                Log.i("#CARREGAR QUESTSQR20 ACTIVITY", listaDePerguntas.size() > 0 ? "OK" : "ERRO");
 
                 if (progressDialog.isShowing()) progressDialog.dismiss();
             }
