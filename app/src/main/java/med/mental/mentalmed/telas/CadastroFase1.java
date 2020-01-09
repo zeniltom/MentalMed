@@ -57,20 +57,6 @@ public class CadastroFase1 extends AppCompatActivity {
     private Questionario questionario = new Questionario();
     private String idUsuario = "";
 
-    private ValueEventListener valueEventListenerQuestionario;
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        referenciaQuestionario.addValueEventListener(valueEventListenerQuestionario);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        referenciaQuestionario.removeEventListener(valueEventListenerQuestionario);
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -179,13 +165,12 @@ public class CadastroFase1 extends AppCompatActivity {
         Preferencias preferencias = new Preferencias(CadastroFase1.this);
         if (preferencias.getIdUsuario() != null) idUsuario = preferencias.getIdUsuario();
 
-        referenciaQuestionario.orderByChild("id").equalTo(idUsuario);
-        valueEventListenerQuestionario = new ValueEventListener() {
+        referenciaQuestionario.orderByChild("id").equalTo(idUsuario).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot dados : dataSnapshot.getChildren()) {
                     questionario = dados.getValue(Questionario.class);
-                    Log.i("#CARREGAR QUESTIONARIO FASE1", questionario.getId() != null ? "OK" : "ERRO");
+                    Log.i("#CARREGAR QUESTIONARIO FASE1", questionario != null ? "OK" : "ERRO");
                     carregarQuestionario(questionario);
                 }
             }
@@ -194,7 +179,8 @@ public class CadastroFase1 extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
-        };
+        });
+
     }
 
     private void carregarQuestionario(Questionario questionario) {

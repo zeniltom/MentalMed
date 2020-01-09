@@ -52,7 +52,6 @@ public class MainActivity extends AppCompatActivity {
     private String idUsuario = "";
     private String androidId = "";
 
-    private ValueEventListener valueEventListenerQuestionario;
     private ValueEventListener valueEventListenerListaQuestSQR20;
     private ValueEventListener valueEventListenerListaQuestAnsiedade;
     private ValueEventListener valueEventListenerListaQuestDepressao;
@@ -61,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        refRespQuestionario.addValueEventListener(valueEventListenerQuestionario);
         refListQuestSQR20.addValueEventListener(valueEventListenerListaQuestSQR20);
         refListQuestAnsiedade.addValueEventListener(valueEventListenerListaQuestAnsiedade);
         refListQuestDepressao.addValueEventListener(valueEventListenerListaQuestDepressao);
@@ -71,7 +69,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        refRespQuestionario.removeEventListener(valueEventListenerQuestionario);
         refListQuestSQR20.removeEventListener(valueEventListenerListaQuestSQR20);
         refListQuestAnsiedade.removeEventListener(valueEventListenerListaQuestAnsiedade);
         refListQuestDepressao.removeEventListener(valueEventListenerListaQuestDepressao);
@@ -152,8 +149,7 @@ public class MainActivity extends AppCompatActivity {
         Preferencias preferencias = new Preferencias(MainActivity.this);
         if (preferencias.getIdUsuario() != null) idUsuario = preferencias.getIdUsuario();
 
-        refRespQuestionario.orderByChild("id").equalTo(idUsuario);
-        valueEventListenerQuestionario = new ValueEventListener() {
+        refRespQuestionario.orderByChild("id").equalTo(idUsuario).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot dados : dataSnapshot.getChildren())
@@ -168,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
-        };
+        });
     }
 
     public void carregarComponentes() {
