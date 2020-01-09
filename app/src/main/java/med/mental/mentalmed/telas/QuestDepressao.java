@@ -33,11 +33,8 @@ public class QuestDepressao extends AppCompatActivity {
     private final List<PerguntaDepressaoCat> listaDePerguntas = new ArrayList<>();
     private PerguntaDepressaoAdapter adapter;
 
-    private DatabaseReference referenciaQuestDepressaoCat = ConfiguracaoFirebase.getFirebase().child("questionarioDepressao");
+    private DatabaseReference referenciaQuestDepressao = ConfiguracaoFirebase.getFirebase().child("questionarioDepressao");
     private String idUsuario = "";
-
-    private String nivelAnsiedade;
-    private int resultadosAnsiedade;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,19 +48,16 @@ public class QuestDepressao extends AppCompatActivity {
     public void abrirFase4(View view) {
         List<PerguntaDepressao> resultadosQuestDepressao = new ArrayList<>(PerguntaDepressaoAdapter.resultados);
 
-        int resultadosDepressao = verificarResultados(resultadosQuestDepressao);
-        String nivelDepressao = nivelDeDepressao(resultadosDepressao);
-
         salvarFirebase(resultadosQuestDepressao);
 
         Intent intent = new Intent(this, CadastroFase4.class);
-        //startActivity(intent);
+        startActivity(intent);
     }
 
     private void salvarFirebase(List<PerguntaDepressao> resultadosQuestDepressao) {
         //Salvar no Firebase
         for (PerguntaDepressao pergDepressao : resultadosQuestDepressao) {
-            referenciaQuestDepressaoCat.child(idUsuario)
+            referenciaQuestDepressao.child(idUsuario)
                     .child(String.valueOf(pergDepressao.getCatPergDepressId()))
                     .child("perguntasDeDepressao").addValueEventListener(new ValueEventListener() {
                 @Override
@@ -73,7 +67,7 @@ public class QuestDepressao extends AppCompatActivity {
 
                         if (dado.getKey() != null && pergDepressaoAchada != null) {
                             if (pergDepressaoAchada.getId() == pergDepressao.getId()) {
-                                referenciaQuestDepressaoCat.child(idUsuario)
+                                referenciaQuestDepressao.child(idUsuario)
                                         .child(String.valueOf(pergDepressaoAchada.getCatPergDepressId()))
                                         .child("perguntasDeDepressao")
                                         .child(dado.getKey()).setValue(pergDepressao);
@@ -93,35 +87,6 @@ public class QuestDepressao extends AppCompatActivity {
         preferencias.salvarDepressao(resultadosQuestDepressao);
     }
 
-    /***
-     * VERIFICA O NÍVEL DE DEPRESSAO
-     * @param qtd
-     */
-    private String nivelDeDepressao(int qtd) {
-        Log.i("#NIVEL DEPRESSAO", String.valueOf(qtd));
-
-        if (qtd >= 0 && qtd <= 10) return "Depressão ausente";
-        else if (qtd >= 10 && qtd <= 18) return "Depressão Leve";
-        else if (qtd >= 19 && qtd <= 29) return "Depressão Moderada";
-        else if (qtd >= 30 && qtd <= 63) return "Depressão Grave";
-        else return "Erro";
-    }
-
-    /***
-     * VERIFICA A QUANTIDADE DE RESPOSTAS
-     * @param resultadosQuestDepressao
-     */
-    private int verificarResultados(List<PerguntaDepressao> resultadosQuestDepressao) {
-        int resultado = 0;
-
-        for (int i = 0; i < resultadosQuestDepressao.size(); i++) {
-            if (resultadosQuestDepressao.get(i).isMarcada())
-                resultado = resultado + resultadosQuestDepressao.get(i).getResposta();
-        }
-
-        return resultado;
-    }
-
     private void carregarComponentes() {
         progressDialog = new SpotsDialog(this, "Carregando...", R.style.dialogEmpregosAL);
         progressDialog.setCancelable(false);
@@ -134,7 +99,7 @@ public class QuestDepressao extends AppCompatActivity {
         Preferencias preferencias = new Preferencias(QuestDepressao.this);
         if (preferencias.getIdUsuario() != null) idUsuario = preferencias.getIdUsuario();
 
-        referenciaQuestDepressaoCat.addValueEventListener(new ValueEventListener() {
+        referenciaQuestDepressao.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 listaDePerguntas.clear();

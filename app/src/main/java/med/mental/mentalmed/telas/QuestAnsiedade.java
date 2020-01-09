@@ -47,11 +47,6 @@ public class QuestAnsiedade extends AppCompatActivity {
     public void avancarFase3(View view) {
         List<PerguntaAnsiedade> resultadosQuestAnsiedade = new ArrayList<>(PerguntaAnsiedadeAdapter.resultados);
 
-        int resultadosAnsiedade = verificarResultados(resultadosQuestAnsiedade);
-        String nivelAnsiedade = nivelDeAnsiedade(resultadosAnsiedade);
-
-        Log.i("#", nivelAnsiedade);
-
         salvarFirebase(resultadosQuestAnsiedade);
 
         Intent intent = new Intent(this, CadastroFase3.class);
@@ -68,35 +63,6 @@ public class QuestAnsiedade extends AppCompatActivity {
                 preferencias.salvarAnsiedade(resultadosQuestAnsiedade);
             });
         }
-    }
-
-    /***
-     * VERIFICA O NÍVEL DE ANSIEDADE
-     * @param qtd
-     */
-    private String nivelDeAnsiedade(int qtd) {
-        Log.i("#NIVEL ANSIEDADE", String.valueOf(qtd));
-
-        if (qtd >= 0 && qtd <= 8) return "Ansiedade ausente";
-        else if (qtd >= 8 && qtd <= 15) return "Ansiedade Leve";
-        else if (qtd >= 16 && qtd <= 25) return "Ansiedade Moderada";
-        else if (qtd >= 25 && qtd <= 63) return "Ansiedade Grave";
-        else return "Erro";
-    }
-
-    /***
-     * VERIFICA A QUANTIDADE DE RESPOSTAS
-     * @param resultadosQuestAnsiedade
-     */
-    private int verificarResultados(List<PerguntaAnsiedade> resultadosQuestAnsiedade) {
-        int resultado = 0;
-
-        for (int i = 0; i < resultadosQuestAnsiedade.size(); i++) {
-            if (resultadosQuestAnsiedade.get(i).isMarcada())
-                resultado = resultado + resultadosQuestAnsiedade.get(i).getResposta();
-        }
-
-        return resultado;
     }
 
     private void carregarComponentes() {

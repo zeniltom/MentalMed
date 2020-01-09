@@ -94,8 +94,8 @@ public class MainActivity extends AppCompatActivity {
         carregarPreferencias();
         criarPreferencias();
 
-        Intent intent = new Intent(this, QuestDepressao.class);
         //Intent intent = new Intent(this, CadastroInicio.class);
+        Intent intent = new Intent(this, QuestSindromeBurnout.class);
         startActivity(intent);
     }
 
@@ -114,32 +114,28 @@ public class MainActivity extends AppCompatActivity {
                     });
 
             //SALVA O QUESTSQR20 SEM RESPOSTA COMPLETO NO FIREBASE PARA O USUÁRIO
-            for (Pergunta pergunta : questSRQ20) {
-                //Salvar no Firebase
+            //Salvar no Firebase
+            for (Pergunta pergunta : questSRQ20)
                 refRespQuestSQR20.child(androidId).child(String.valueOf(pergunta.getId()))
                         .setValue(pergunta).addOnSuccessListener(aVoid -> Log.i("#SALVAR QUESTSQR20", "OK"));
-            }
 
             //SALVA O QUESTANSIEDADE SEM RESPOSTA COMPLETO NO FIREBASE PARA O USUÁRIO
-            for (PerguntaAnsiedade perguntaAnsiedade : questAnsiedade) {
-                //Salvar no Firebase
+            //Salvar no Firebase
+            for (PerguntaAnsiedade perguntaAnsiedade : questAnsiedade)
                 refRespQuestAnsiedade.child(androidId).child(String.valueOf(perguntaAnsiedade.getId()))
                         .setValue(perguntaAnsiedade).addOnSuccessListener(aVoid -> Log.i("#SALVAR QUESTANSIEDADE", "OK"));
-            }
 
             //SALVA O QUESTDEPRESSAO SEM RESPOSTA COMPLETO NO FIREBASE PARA O USUÁRIO
-            for (PerguntaDepressaoCat perguntaDepressaoCat : questDepressao) {
-                //Salvar no Firebase
+            //Salvar no Firebase
+            for (PerguntaDepressaoCat perguntaDepressaoCat : questDepressao)
                 refRespQuestDepressao.child(androidId).child(String.valueOf(perguntaDepressaoCat.getId()))
                         .setValue(perguntaDepressaoCat).addOnSuccessListener(aVoid -> Log.i("#SALVAR QUESTDEPRESSAOCAT", "OK"));
-            }
 
             //SALVA O QUESTSINDROMEBURNOUT SEM RESPOSTA COMPLETO NO FIREBASE PARA O USUÁRIO
-            for (PerguntaBurnout perguntaBurnout : questSindromeBurnout) {
-                //Salvar no Firebase
+            //Salvar no Firebase
+            for (PerguntaBurnout perguntaBurnout : questSindromeBurnout)
                 refRespQuestSindromeBurnout.child(androidId).child(String.valueOf(perguntaBurnout.getId()))
                         .setValue(perguntaBurnout).addOnSuccessListener(aVoid -> Log.i("#SALVAR QUESTSINDROMEBURNOUT", "OK"));
-            }
 
             //Salvar nas Preferências
             Preferencias preferencias = new Preferencias(MainActivity.this);
@@ -161,9 +157,8 @@ public class MainActivity extends AppCompatActivity {
         valueEventListenerQuestionario = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot dados : dataSnapshot.getChildren()) {
+                for (DataSnapshot dados : dataSnapshot.getChildren())
                     questionario = dados.getValue(Questionario.class);
-                }
 
                 Log.i("#CARREGAR QUESTIONARIO", questionario != null ? "OK" : "ERRO");
                 if (progressDialog.isShowing()) progressDialog.dismiss();

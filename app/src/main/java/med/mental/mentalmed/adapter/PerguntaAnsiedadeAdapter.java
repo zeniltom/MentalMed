@@ -64,13 +64,10 @@ public class PerguntaAnsiedadeAdapter extends BaseAdapter {
             View radio = radioGroup.getChildAt(i);
             if (perguntaAnsiedade.isMarcada()) {
                 descricao.setTextColor(Color.GRAY);
-                if (perguntaAnsiedade.getResposta() == 0)
-                    radio.setEnabled(false);
-                else if (perguntaAnsiedade.getResposta() == 1)
-                    radio.setEnabled(false);
-                else if (perguntaAnsiedade.getResposta() == 2)
-                    radio.setEnabled(false);
-                else if (perguntaAnsiedade.getResposta() == 4)
+                if (perguntaAnsiedade.getResposta() == 0
+                        || perguntaAnsiedade.getResposta() == 1
+                        || perguntaAnsiedade.getResposta() == 2
+                        || perguntaAnsiedade.getResposta() == 4)
                     radio.setEnabled(false);
             }
         }

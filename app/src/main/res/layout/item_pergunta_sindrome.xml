@@ -7,6 +7,20 @@
     android:padding="8dp">
 
     <TextView
+        android:id="@+id/categoria_perg_sindrome"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:textColor="@android:color/background_dark"
+        android:textSize="22sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.25"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Categoria" />
+
+    <TextView
         android:id="@+id/descricao"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -16,8 +30,8 @@
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Teste" />
+        app:layout_constraintTop_toBottomOf="@+id/categoria_perg_sindrome"
+        tools:text="Descrição" />
 
     <RadioGroup
         android:id="@+id/radio_group"
