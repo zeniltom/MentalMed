@@ -157,7 +157,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot dados : dataSnapshot.getChildren())
-                    questionario = dados.getValue(Questionario.class);
+                    if (!idUsuario.equals(""))
+                        questionario = dados.getValue(Questionario.class);
 
                 Log.i("#CARREGAR QUESTIONARIO", questionario != null ? "OK" : "ERRO");
                 if (progressDialog.isShowing()) progressDialog.dismiss();
