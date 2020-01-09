@@ -25,10 +25,8 @@ import med.mental.mentalmed.config.Preferencias;
 import med.mental.mentalmed.model.Pergunta;
 import med.mental.mentalmed.model.PerguntaAnsiedade;
 import med.mental.mentalmed.model.PerguntaBurnout;
-import med.mental.mentalmed.model.PerguntaDepressao;
 import med.mental.mentalmed.model.PerguntaDepressaoCat;
 import med.mental.mentalmed.model.Questionario;
-import med.mental.mentalmed.repository.Perguntas;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -37,21 +35,18 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseReference refRespQuestionario = ConfiguracaoFirebase.getFirebase().child("questionario");
     private DatabaseReference refRespQuestSQR20 = ConfiguracaoFirebase.getFirebase().child("questionarioSQ20");
     private DatabaseReference refRespQuestAnsiedade = ConfiguracaoFirebase.getFirebase().child("questionarioAnsiedade");
-    private DatabaseReference refRespQuestDepressaoCat = ConfiguracaoFirebase.getFirebase().child("questionarioDepressaoCat");
     private DatabaseReference refRespQuestDepressao = ConfiguracaoFirebase.getFirebase().child("questionarioDepressao");
     private DatabaseReference refRespQuestSindromeBurnout = ConfiguracaoFirebase.getFirebase().child("questionarioSindromeBurnout");
 
     private DatabaseReference refListQuestSQR20 = ConfiguracaoFirebase.getFirebase().child("perguntasSQR20");
     private DatabaseReference refListQuestAnsiedade = ConfiguracaoFirebase.getFirebase().child("perguntasAnsiedade");
-    private DatabaseReference refListQuestDepressaoCat = ConfiguracaoFirebase.getFirebase().child("perguntasDepressaoCat");
     private DatabaseReference refListQuestDepressao = ConfiguracaoFirebase.getFirebase().child("perguntasDepressao");
     private DatabaseReference refListQuestSindromeBurnout = ConfiguracaoFirebase.getFirebase().child("perguntasSindromeBurnout");
 
     private Questionario questionario;
     private List<Pergunta> questSRQ20 = new ArrayList<>();
     private List<PerguntaAnsiedade> questAnsiedade = new ArrayList<>();
-    private List<PerguntaDepressaoCat> questDepressaoCat = new ArrayList<>();
-    private List<PerguntaDepressao> questDepressao = new ArrayList<>();
+    private List<PerguntaDepressaoCat> questDepressao = new ArrayList<>();
     private List<PerguntaBurnout> questSindromeBurnout = new ArrayList<>();
 
     private String idUsuario = "";
@@ -61,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
     private ValueEventListener valueEventListenerListaQuestSQR20;
     private ValueEventListener valueEventListenerListaQuestAnsiedade;
     private ValueEventListener valueEventListenerListaQuestDepressao;
-    private ValueEventListener valueEventListenerListaQuestDepressaoCat;
     private ValueEventListener valueEventListenerListaQuestSindromeBurnout;
 
     @Override
@@ -70,8 +64,7 @@ public class MainActivity extends AppCompatActivity {
         refRespQuestionario.addValueEventListener(valueEventListenerQuestionario);
         refListQuestSQR20.addValueEventListener(valueEventListenerListaQuestSQR20);
         refListQuestAnsiedade.addValueEventListener(valueEventListenerListaQuestAnsiedade);
-        //refListQuestDepressao.addValueEventListener(valueEventListenerListaQuestDepressao);
-        refListQuestDepressaoCat.addValueEventListener(valueEventListenerListaQuestDepressaoCat);
+        refListQuestDepressao.addValueEventListener(valueEventListenerListaQuestDepressao);
         refListQuestSindromeBurnout.addValueEventListener(valueEventListenerListaQuestSindromeBurnout);
     }
 
@@ -81,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         refRespQuestionario.removeEventListener(valueEventListenerQuestionario);
         refListQuestSQR20.removeEventListener(valueEventListenerListaQuestSQR20);
         refListQuestAnsiedade.removeEventListener(valueEventListenerListaQuestAnsiedade);
-//        refListQuestDepressao.removeEventListener(valueEventListenerListaQuestDepressao);
+        refListQuestDepressao.removeEventListener(valueEventListenerListaQuestDepressao);
         refListQuestSindromeBurnout.removeEventListener(valueEventListenerListaQuestSindromeBurnout);
     }
 
@@ -135,14 +128,11 @@ public class MainActivity extends AppCompatActivity {
             }
 
             //SALVA O QUESTDEPRESSAO SEM RESPOSTA COMPLETO NO FIREBASE PARA O USUÁRIO
-            for (PerguntaDepressaoCat perguntaDepressaoCat : questDepressaoCat) {
+            for (PerguntaDepressaoCat perguntaDepressaoCat : questDepressao) {
                 //Salvar no Firebase
-                refRespQuestDepressaoCat.child(androidId).child(String.valueOf(perguntaDepressaoCat.getId()))
+                refRespQuestDepressao.child(androidId).child(String.valueOf(perguntaDepressaoCat.getId()))
                         .setValue(perguntaDepressaoCat).addOnSuccessListener(aVoid -> Log.i("#SALVAR QUESTDEPRESSAOCAT", "OK"));
             }
-
-            Log.i("#RESULTCAT", questDepressaoCat.toString());
-
 
             //SALVA O QUESTSINDROMEBURNOUT SEM RESPOSTA COMPLETO NO FIREBASE PARA O USUÁRIO
             for (PerguntaBurnout perguntaBurnout : questSindromeBurnout) {
@@ -153,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
 
             //Salvar nas Preferências
             Preferencias preferencias = new Preferencias(MainActivity.this);
-            preferencias.salvarDados(androidId, questionario, questSRQ20, questAnsiedade, questDepressaoCat, questSindromeBurnout);
+            preferencias.salvarDados(androidId, questionario, questSRQ20, questAnsiedade, questDepressao, questSindromeBurnout);
         }
 
         if (progressDialog.isShowing()) progressDialog.dismiss();
@@ -225,14 +215,14 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        valueEventListenerListaQuestDepressaoCat = new ValueEventListener() {
+        valueEventListenerListaQuestDepressao = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                questDepressaoCat.clear();
+                questDepressao.clear();
 
                 for (DataSnapshot dados : dataSnapshot.getChildren()) {
                     PerguntaDepressaoCat perguntaDepressao = dados.getValue(PerguntaDepressaoCat.class);
-                    questDepressaoCat.add(perguntaDepressao);
+                    questDepressao.add(perguntaDepressao);
                 }
 
                 Log.i("#CARREGAR QUESTDEPRESSAOCAT", questDepressao.size() > 0 ? "OK" : "ERRO");
@@ -263,24 +253,17 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        ArrayList<PerguntaDepressaoCat> listaDePerguntas = new ArrayList<>();
-        listaDePerguntas.addAll(new Perguntas(this).todasCategoriasPergDepress());
-
-        for (int i = 0; i < listaDePerguntas.size(); i++) {
-            PerguntaDepressaoCat pdc = listaDePerguntas.get(i);
-
-            pdc.setPerguntasDeDepressao(new Perguntas(this).perguntaDepressaoPorCat(pdc.getId()));
-            listaDePerguntas.set(i, pdc);
-
-            for (PerguntaDepressao p : pdc.getPerguntasDeDepressao()) {
-                refListQuestDepressaoCat.child(String.valueOf(p.getId())).setValue(pdc);
-            }
-
-            for (PerguntaDepressao a : pdc.getPerguntasDeDepressao())
-                refListQuestDepressaoCat.child(pdc.getId().toString())
-                        .child("perguntasDeDepressao")
-                        .child(String.valueOf(a.getId())).setValue(a);
-        }
+//        ArrayList<PerguntaDepressaoCat> listaDePerguntas = new ArrayList<>();
+//        listaDePerguntas.addAll(new Perguntas(this).todasCategoriasPergDepress());
+//
+//        for (int i = 0; i < listaDePerguntas.size(); i++) {
+//            PerguntaDepressaoCat pdc = listaDePerguntas.get(i);
+//
+//            pdc.setPerguntasDeDepressao(new Perguntas(this).perguntaDepressaoPorCat(pdc.getId()));
+//            listaDePerguntas.set(i, pdc);
+//
+//            refListQuestDepressao.child(String.valueOf(pdc.getId())).setValue(pdc);
+//        }
     }
 
     private void msg(String texto) {

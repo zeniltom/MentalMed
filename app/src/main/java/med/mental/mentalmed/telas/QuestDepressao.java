@@ -33,7 +33,7 @@ public class QuestDepressao extends AppCompatActivity {
     private final List<PerguntaDepressaoCat> listaDePerguntas = new ArrayList<>();
     private PerguntaDepressaoAdapter adapter;
 
-    private DatabaseReference referenciaQuestDepressaoCat = ConfiguracaoFirebase.getFirebase().child("questionarioDepressaoCat");
+    private DatabaseReference referenciaQuestDepressaoCat = ConfiguracaoFirebase.getFirebase().child("questionarioDepressao");
     private String idUsuario = "";
 
     private String nivelAnsiedade;
@@ -43,22 +43,6 @@ public class QuestDepressao extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quest_depressao);
-
-//         resultadosSQR20 = (List<Pergunta>) getIntent().getSerializableExtra("resultadosSQR20");
-//        resultadosQuestAnsiedade = (List<PerguntaAnsiedade>) getIntent().getSerializableExtra("resultadosQuestAnsiedade");
-//
-//        Bundle bundle = getIntent().getExtras();
-//        if (bundle != null) {
-//            nivelAnsiedade = bundle.getString("nivelAnsiedade");
-//            resultadosAnsiedade = bundle.getInt("resultadosAnsiedade");
-//        }
-//        listaDePerguntas.addAll(new Perguntas(this).todasCategoriasPergDepress());
-//
-//        for (int i = 0; i < listaDePerguntas.size(); i++) {
-//            PerguntaDepressaoCat p = listaDePerguntas.get(i);
-//            p.setPerguntasDeDepressao(new Perguntas(this).perguntaDepressaoPorCat(p.getId()));
-//            listaDePerguntas.set(i, p);
-//        }
 
         carregarComponentes();
         carregarPreferencias();
@@ -70,31 +54,43 @@ public class QuestDepressao extends AppCompatActivity {
         int resultadosDepressao = verificarResultados(resultadosQuestDepressao);
         String nivelDepressao = nivelDeDepressao(resultadosDepressao);
 
-        //Log.i("#", nivelDepressao);
-
-        //salvarFirebase(resultadosQuestDepressao);
+        salvarFirebase(resultadosQuestDepressao);
 
         Intent intent = new Intent(this, CadastroFase4.class);
         //startActivity(intent);
-
-        for (PerguntaDepressao perguntaDepressao : resultadosQuestDepressao) {
-            referenciaQuestDepressaoCat.child(idUsuario)
-                    .child(String.valueOf(perguntaDepressao.getCatPergDepressId()))
-                    .child("perguntasDeDepressao")
-                    .child(String.valueOf(perguntaDepressao.getId())).setValue(perguntaDepressao);
-        }
     }
 
     private void salvarFirebase(List<PerguntaDepressao> resultadosQuestDepressao) {
-        for (PerguntaDepressao perguntaDepressao : resultadosQuestDepressao) {
-            //Salvar no Firebase
-            referenciaQuestDepressaoCat.child(idUsuario).child(String.valueOf(perguntaDepressao.getId()))
-                    .setValue(perguntaDepressao).addOnSuccessListener(aVoid -> {
-                //Salvar nas Preferências
-                Preferencias preferencias = new Preferencias(QuestDepressao.this);
-                preferencias.salvarDepressao(resultadosQuestDepressao);
+        //Salvar no Firebase
+        for (PerguntaDepressao pergDepressao : resultadosQuestDepressao) {
+            referenciaQuestDepressaoCat.child(idUsuario)
+                    .child(String.valueOf(pergDepressao.getCatPergDepressId()))
+                    .child("perguntasDeDepressao").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for (DataSnapshot dado : dataSnapshot.getChildren()) {
+                        PerguntaDepressao pergDepressaoAchada = dado.getValue(PerguntaDepressao.class);
+
+                        if (dado.getKey() != null && pergDepressaoAchada != null) {
+                            if (pergDepressaoAchada.getId() == pergDepressao.getId()) {
+                                referenciaQuestDepressaoCat.child(idUsuario)
+                                        .child(String.valueOf(pergDepressaoAchada.getCatPergDepressId()))
+                                        .child("perguntasDeDepressao")
+                                        .child(dado.getKey()).setValue(pergDepressao);
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
             });
         }
+        //Salvar nas Preferências
+        Preferencias preferencias = new Preferencias(QuestDepressao.this);
+        preferencias.salvarDepressao(resultadosQuestDepressao);
     }
 
     /***
