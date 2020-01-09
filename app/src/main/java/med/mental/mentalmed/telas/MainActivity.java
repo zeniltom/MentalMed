@@ -94,8 +94,7 @@ public class MainActivity extends AppCompatActivity {
         carregarPreferencias();
         criarPreferencias();
 
-        //Intent intent = new Intent(this, CadastroInicio.class);
-        Intent intent = new Intent(this, QuestSindromeBurnout.class);
+        Intent intent = new Intent(this, CadastroInicio.class);
         startActivity(intent);
     }
 
@@ -172,63 +171,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void carregarComponentes() {
-        valueEventListenerListaQuestSQR20 = new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                questSRQ20.clear();
+        carregarListaQuestSQ20();
+        carregarListaQuestAnsiedade();
+        carregarListaQuestDepressao();
+        carregarListaQuestSindromeBurnout();
 
-                for (DataSnapshot dados : dataSnapshot.getChildren()) {
-                    Pergunta pergunta = dados.getValue(Pergunta.class);
-                    questSRQ20.add(pergunta);
-                }
+//        ArrayList<PerguntaDepressaoCat> listaDePerguntas = new ArrayList<>();
+//        listaDePerguntas.addAll(new Perguntas(this).todasCategoriasPergDepress());
+//
+//        for (int i = 0; i < listaDePerguntas.size(); i++) {
+//            PerguntaDepressaoCat pdc = listaDePerguntas.get(i);
+//
+//            pdc.setPerguntasDeDepressao(new Perguntas(this).perguntaDepressaoPorCat(pdc.getId()));
+//            listaDePerguntas.set(i, pdc);
+//
+//            refListQuestDepressao.child(String.valueOf(pdc.getId())).setValue(pdc);
+//        }
+    }
 
-                Log.i("#CARREGAR QUESTSQR20", questSRQ20.size() > 0 ? "OK" : "ERRO");
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        };
-
-        valueEventListenerListaQuestAnsiedade = new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                questAnsiedade.clear();
-
-                for (DataSnapshot dados : dataSnapshot.getChildren()) {
-                    PerguntaAnsiedade perguntaAnsiedade = dados.getValue(PerguntaAnsiedade.class);
-                    questAnsiedade.add(perguntaAnsiedade);
-                }
-
-                Log.i("#CARREGAR QUESTANSIEDADE", questAnsiedade.size() > 0 ? "OK" : "ERRO");
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        };
-
-        valueEventListenerListaQuestDepressao = new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                questDepressao.clear();
-
-                for (DataSnapshot dados : dataSnapshot.getChildren()) {
-                    PerguntaDepressaoCat perguntaDepressao = dados.getValue(PerguntaDepressaoCat.class);
-                    questDepressao.add(perguntaDepressao);
-                }
-
-                Log.i("#CARREGAR QUESTDEPRESSAOCAT", questDepressao.size() > 0 ? "OK" : "ERRO");
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        };
-
+    private void carregarListaQuestSindromeBurnout() {
         valueEventListenerListaQuestSindromeBurnout = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -247,18 +208,69 @@ public class MainActivity extends AppCompatActivity {
 
             }
         };
+    }
 
-//        ArrayList<PerguntaDepressaoCat> listaDePerguntas = new ArrayList<>();
-//        listaDePerguntas.addAll(new Perguntas(this).todasCategoriasPergDepress());
-//
-//        for (int i = 0; i < listaDePerguntas.size(); i++) {
-//            PerguntaDepressaoCat pdc = listaDePerguntas.get(i);
-//
-//            pdc.setPerguntasDeDepressao(new Perguntas(this).perguntaDepressaoPorCat(pdc.getId()));
-//            listaDePerguntas.set(i, pdc);
-//
-//            refListQuestDepressao.child(String.valueOf(pdc.getId())).setValue(pdc);
-//        }
+    private void carregarListaQuestDepressao() {
+        valueEventListenerListaQuestDepressao = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                questDepressao.clear();
+
+                for (DataSnapshot dados : dataSnapshot.getChildren()) {
+                    PerguntaDepressaoCat perguntaDepressao = dados.getValue(PerguntaDepressaoCat.class);
+                    questDepressao.add(perguntaDepressao);
+                }
+
+                Log.i("#CARREGAR QUESTDEPRESSAOCAT", questDepressao.size() > 0 ? "OK" : "ERRO");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+    }
+
+    private void carregarListaQuestAnsiedade() {
+        valueEventListenerListaQuestAnsiedade = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                questAnsiedade.clear();
+
+                for (DataSnapshot dados : dataSnapshot.getChildren()) {
+                    PerguntaAnsiedade perguntaAnsiedade = dados.getValue(PerguntaAnsiedade.class);
+                    questAnsiedade.add(perguntaAnsiedade);
+                }
+
+                Log.i("#CARREGAR QUESTANSIEDADE", questAnsiedade.size() > 0 ? "OK" : "ERRO");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+    }
+
+    private void carregarListaQuestSQ20() {
+        valueEventListenerListaQuestSQR20 = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                questSRQ20.clear();
+
+                for (DataSnapshot dados : dataSnapshot.getChildren()) {
+                    Pergunta pergunta = dados.getValue(Pergunta.class);
+                    questSRQ20.add(pergunta);
+                }
+
+                Log.i("#CARREGAR QUESTSQR20", questSRQ20.size() > 0 ? "OK" : "ERRO");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
     }
 
     private void msg(String texto) {
