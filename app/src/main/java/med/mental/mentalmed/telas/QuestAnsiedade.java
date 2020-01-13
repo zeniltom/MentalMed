@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -47,10 +48,15 @@ public class QuestAnsiedade extends AppCompatActivity {
     public void avancarFase3(View view) {
         List<PerguntaAnsiedade> resultadosQuestAnsiedade = new ArrayList<>(PerguntaAnsiedadeAdapter.resultados);
 
-        salvarFirebase(resultadosQuestAnsiedade);
+        try {
+            salvarFirebase(resultadosQuestAnsiedade);
 
-        Intent intent = new Intent(this, CadastroFase3.class);
-        startActivity(intent);
+            Intent intent = new Intent(this, CadastroFase3.class);
+            startActivity(intent);
+        } catch (Exception e) {
+            msg("Erro: " + e.getLocalizedMessage() + ". Consulte o suporte!");
+            e.printStackTrace();
+        }
     }
 
     private void salvarFirebase(List<PerguntaAnsiedade> resultadosQuestAnsiedade) {
@@ -63,6 +69,10 @@ public class QuestAnsiedade extends AppCompatActivity {
                 preferencias.salvarAnsiedade(resultadosQuestAnsiedade);
             });
         }
+    }
+
+    private void msg(String texto) {
+        Toast.makeText(getApplicationContext(), texto, Toast.LENGTH_SHORT).show();
     }
 
     private void carregarComponentes() {

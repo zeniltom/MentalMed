@@ -57,14 +57,19 @@ public class CadastroFase2 extends AppCompatActivity {
     }
 
     private void abrirAnsiedade() {
-        coletarRespostas();
+        try {
+            coletarRespostas();
 
-        if (isValid()) {
+            if (isValid()) {
 
-            if (!questionario.isRespondido()) salvarFirebase();
+                if (!questionario.isRespondido()) salvarFirebase();
 
-            Intent intent = new Intent(this, QuestAnsiedade.class);
-            startActivity(intent);
+                Intent intent = new Intent(this, QuestAnsiedade.class);
+                startActivity(intent);
+            }
+        } catch (Exception e) {
+            msg("Erro: " + e.getLocalizedMessage() + ". Consulte o suporte!");
+            e.printStackTrace();
         }
     }
 
@@ -155,6 +160,8 @@ public class CadastroFase2 extends AppCompatActivity {
 
             }
         });
+
+        if (progressDialog.isShowing()) progressDialog.dismiss();
     }
 
     private void carregarQuestionario(Questionario questionario) {
@@ -174,8 +181,6 @@ public class CadastroFase2 extends AppCompatActivity {
 
             bloquearComponentes();
         }
-
-        if (progressDialog.isShowing()) progressDialog.dismiss();
     }
 
     private void bloquearComponentes() {

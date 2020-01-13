@@ -3,6 +3,7 @@ package med.mental.mentalmed.telas;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -59,6 +60,10 @@ public class InformarCondicaoActivity extends AppCompatActivity {
         carregarPreferencias();
     }
 
+    private void msg(String texto) {
+        Toast.makeText(getApplicationContext(), texto, Toast.LENGTH_SHORT).show();
+    }
+
     public void carregarComponentes() {
         progressDialog = new SpotsDialog(this, "Carregando...", R.style.dialogEmpregosAL);
         progressDialog.setCancelable(false);
@@ -70,16 +75,21 @@ public class InformarCondicaoActivity extends AppCompatActivity {
     }
 
     public void carregarPreferencias() {
-        Preferencias preferencias = new Preferencias(InformarCondicaoActivity.this);
-        if (preferencias.getIdUsuario() != null) idUsuario = preferencias.getIdUsuario();
+        try {
+            Preferencias preferencias = new Preferencias(InformarCondicaoActivity.this);
+            if (preferencias.getIdUsuario() != null) idUsuario = preferencias.getIdUsuario();
 
-        carregarRespostasAnsiedade();
-        carregarRespostasDepressao();
-        carregarRespostasSindromeBurnout();
+            carregarRespostasAnsiedade();
+            carregarRespostasDepressao();
+            carregarRespostasSindromeBurnout();
 
-        Log.i("#NIVEL ANSIEDADE", String.valueOf(resultadosAnsiedade));
-        Log.i("#NIVEL DEPRESSAO", String.valueOf(resultadosDepressao));
-        Log.i("#NIVEL SINDROME BURNOUT", String.valueOf(resultadosSindromeB));
+            Log.i("#NIVEL ANSIEDADE", String.valueOf(resultadosAnsiedade));
+            Log.i("#NIVEL DEPRESSAO", String.valueOf(resultadosDepressao));
+            Log.i("#NIVEL SINDROME BURNOUT", String.valueOf(resultadosSindromeB));
+        } catch (Exception e) {
+            msg("Erro: " + e.getLocalizedMessage() + ". Consulte o suporte!");
+            e.printStackTrace();
+        }
     }
 
     private void carregarRespostasDepressao() {

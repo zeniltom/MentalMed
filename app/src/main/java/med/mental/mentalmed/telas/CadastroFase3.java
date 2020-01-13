@@ -56,14 +56,19 @@ public class CadastroFase3 extends AppCompatActivity {
     }
 
     private void avancarDepressao() {
-        coletarRespostas();
+        try {
+            coletarRespostas();
 
-        if (isValid()) {
+            if (isValid()) {
 
-            if (!questionario.isRespondido()) salvarFirebase();
+                if (!questionario.isRespondido()) salvarFirebase();
 
-            Intent intent = new Intent(this, QuestDepressao.class);
-            startActivity(intent);
+                Intent intent = new Intent(this, QuestDepressao.class);
+                startActivity(intent);
+            }
+        } catch (Exception e) {
+            msg("Erro: " + e.getLocalizedMessage() + ". Consulte o suporte!");
+            e.printStackTrace();
         }
     }
 
@@ -107,15 +112,15 @@ public class CadastroFase3 extends AppCompatActivity {
         boolean resultado = true;
 
         if (questionario.getHorasLazerSemanalmente() == 0) {
-            msg();
+            msg("Preencha as Horas de lazer semanalmente");
             resultado = false;
         }
 
         return resultado;
     }
 
-    private void msg() {
-        Toast.makeText(getApplicationContext(), "Informe a quantidade de horas de lazer semanalmente", Toast.LENGTH_SHORT).show();
+    private void msg(String texto) {
+        Toast.makeText(getApplicationContext(), texto, Toast.LENGTH_SHORT).show();
     }
 
     private void carregarComponentes() {
@@ -154,6 +159,8 @@ public class CadastroFase3 extends AppCompatActivity {
 
             }
         });
+
+        if (progressDialog.isShowing()) progressDialog.dismiss();
     }
 
     private void carregarQuestionario(Questionario questionario) {
@@ -174,8 +181,6 @@ public class CadastroFase3 extends AppCompatActivity {
 
             bloquearComponentes();
         }
-
-        if (progressDialog.isShowing()) progressDialog.dismiss();
     }
 
     private void bloquearComponentes() {

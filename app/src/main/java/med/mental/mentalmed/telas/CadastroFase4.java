@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -51,15 +52,20 @@ public class CadastroFase4 extends AppCompatActivity {
     }
 
     private void avancarSindromeBurnout() {
-        coletarRespostas();
+        try {
+            coletarRespostas();
 
-        if (!questionario.isRespondido()) {
-            questionario.setRespondido(true);
-            salvarFirebase();
+            if (!questionario.isRespondido()) {
+                questionario.setRespondido(true);
+                salvarFirebase();
+            }
+
+            Intent intent = new Intent(this, QuestSindromeBurnout.class);
+            startActivity(intent);
+        } catch (Exception e) {
+            msg("Erro: " + e.getLocalizedMessage() + ". Consulte o suporte!");
+            e.printStackTrace();
         }
-
-        Intent intent = new Intent(this, QuestSindromeBurnout.class);
-        startActivity(intent);
     }
 
     private void salvarFirebase() {
@@ -98,6 +104,10 @@ public class CadastroFase4 extends AppCompatActivity {
         });
     }
 
+    private void msg(String texto) {
+        Toast.makeText(getApplicationContext(), texto, Toast.LENGTH_SHORT).show();
+    }
+
     private void carregarComponentes() {
         progressDialog = new SpotsDialog(this, "Carregando...", R.style.dialogEmpregosAL);
         progressDialog.setCancelable(false);
@@ -131,6 +141,8 @@ public class CadastroFase4 extends AppCompatActivity {
 
             }
         });
+
+        if (progressDialog.isShowing()) progressDialog.dismiss();
     }
 
     private void carregarQuestionario(Questionario questionario) {
@@ -148,8 +160,6 @@ public class CadastroFase4 extends AppCompatActivity {
 
             bloquearComponentes();
         }
-
-        if (progressDialog.isShowing()) progressDialog.dismiss();
     }
 
     private void bloquearComponentes() {

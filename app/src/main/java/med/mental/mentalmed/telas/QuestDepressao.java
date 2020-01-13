@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -48,10 +49,15 @@ public class QuestDepressao extends AppCompatActivity {
     public void abrirFase4(View view) {
         List<PerguntaDepressao> resultadosQuestDepressao = new ArrayList<>(PerguntaDepressaoAdapter.resultados);
 
-        salvarFirebase(resultadosQuestDepressao);
+        try {
+            salvarFirebase(resultadosQuestDepressao);
 
-        Intent intent = new Intent(this, CadastroFase4.class);
-        startActivity(intent);
+            Intent intent = new Intent(this, CadastroFase4.class);
+            startActivity(intent);
+        } catch (Exception e) {
+            msg("Erro: " + e.getLocalizedMessage() + ". Consulte o suporte!");
+            e.printStackTrace();
+        }
     }
 
     private void salvarFirebase(List<PerguntaDepressao> resultadosQuestDepressao) {
@@ -85,6 +91,10 @@ public class QuestDepressao extends AppCompatActivity {
         //Salvar nas Preferências
         Preferencias preferencias = new Preferencias(QuestDepressao.this);
         preferencias.salvarDepressao(resultadosQuestDepressao);
+    }
+
+    private void msg(String texto) {
+        Toast.makeText(getApplicationContext(), texto, Toast.LENGTH_SHORT).show();
     }
 
     private void carregarComponentes() {

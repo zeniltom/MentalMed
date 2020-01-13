@@ -32,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
 
     private SpotsDialog progressDialog;
 
+    private DatabaseReference refConenexao = ConfiguracaoFirebase.getFirebase().child(".info/connected");
+
     private DatabaseReference refRespQuestionario = ConfiguracaoFirebase.getFirebase().child("questionario");
     private DatabaseReference refRespQuestSQR20 = ConfiguracaoFirebase.getFirebase().child("questionarioSQ20");
     private DatabaseReference refRespQuestAnsiedade = ConfiguracaoFirebase.getFirebase().child("questionarioAnsiedade");
@@ -88,64 +90,80 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void abrirMainCadastro(View view) {
-        carregarPreferencias();
-        criarPreferencias();
+        refConenexao.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Boolean conectado = dataSnapshot.getValue(Boolean.class);
 
-        Intent intent = new Intent(this, CadastroInicio.class);
-        startActivity(intent);
+                if (conectado != null && conectado) {
+                    carregarPreferencias();
+                    criarPreferencias();
+
+                    Intent intent = new Intent(MainActivity.this, CadastroInicio.class);
+                    startActivity(intent);
+
+                } else msg("Sem conexão!");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void criarPreferencias() {
-        if (questionario == null) {
-            questionario = new Questionario();
-            questionario.setId(androidId);
-            questionario.setRespondido(false);
+        try {
+            if (questionario == null) {
+                questionario = new Questionario();
+                questionario.setId(androidId);
+                questionario.setRespondido(false);
 
-            //SALVA O QUESTIONÁRIO SEM RESPOSTA COMPLETO NO FIREBASE PARA O USUÁRIO
-            refRespQuestionario.child(androidId).setValue(questionario)
-                    .addOnSuccessListener(aVoid -> Log.i("#SALVAR QUESTIONARIO", "OK"))
-                    .addOnFailureListener(e -> {
-                        msg("Erro ao salvar registros no Servidor! ERRO: " + e.getLocalizedMessage());
-                        Log.i("#SALVAR QUESTIONARIO", "ERRO");
-                    });
+                //SALVA O QUESTIONÁRIO SEM RESPOSTA COMPLETO NO FIREBASE PARA O USUÁRIO
+                refRespQuestionario.child(androidId).setValue(questionario)
+                        .addOnSuccessListener(aVoid -> Log.i("#SALVAR QUESTIONARIO", "OK"))
+                        .addOnFailureListener(e -> {
+                            msg("Erro ao salvar registros no Servidor! ERRO: " + e.getLocalizedMessage());
+                            Log.i("#SALVAR QUESTIONARIO", "ERRO");
+                        });
 
-            //SALVA O QUESTSQR20 SEM RESPOSTA COMPLETO NO FIREBASE PARA O USUÁRIO
-            //Salvar no Firebase
-            for (Pergunta pergunta : questSRQ20)
-                refRespQuestSQR20.child(androidId).child(String.valueOf(pergunta.getId()))
-                        .setValue(pergunta).addOnSuccessListener(aVoid -> Log.i("#SALVAR QUESTSQR20", "OK"));
+                //SALVA O QUESTSQR20 SEM RESPOSTA COMPLETO NO FIREBASE PARA O USUÁRIO
+                //Salvar no Firebase
+                for (Pergunta pergunta : questSRQ20)
+                    refRespQuestSQR20.child(androidId).child(String.valueOf(pergunta.getId()))
+                            .setValue(pergunta).addOnSuccessListener(aVoid -> Log.i("#SALVAR QUESTSQR20", "OK"));
 
-            //SALVA O QUESTANSIEDADE SEM RESPOSTA COMPLETO NO FIREBASE PARA O USUÁRIO
-            //Salvar no Firebase
-            for (PerguntaAnsiedade perguntaAnsiedade : questAnsiedade)
-                refRespQuestAnsiedade.child(androidId).child(String.valueOf(perguntaAnsiedade.getId()))
-                        .setValue(perguntaAnsiedade).addOnSuccessListener(aVoid -> Log.i("#SALVAR QUESTANSIEDADE", "OK"));
+                //SALVA O QUESTANSIEDADE SEM RESPOSTA COMPLETO NO FIREBASE PARA O USUÁRIO
+                //Salvar no Firebase
+                for (PerguntaAnsiedade perguntaAnsiedade : questAnsiedade)
+                    refRespQuestAnsiedade.child(androidId).child(String.valueOf(perguntaAnsiedade.getId()))
+                            .setValue(perguntaAnsiedade).addOnSuccessListener(aVoid -> Log.i("#SALVAR QUESTANSIEDADE", "OK"));
 
-            //SALVA O QUESTDEPRESSAO SEM RESPOSTA COMPLETO NO FIREBASE PARA O USUÁRIO
-            //Salvar no Firebase
-            for (PerguntaDepressaoCat perguntaDepressaoCat : questDepressao)
-                refRespQuestDepressao.child(androidId).child(String.valueOf(perguntaDepressaoCat.getId()))
-                        .setValue(perguntaDepressaoCat).addOnSuccessListener(aVoid -> Log.i("#SALVAR QUESTDEPRESSAOCAT", "OK"));
+                //SALVA O QUESTDEPRESSAO SEM RESPOSTA COMPLETO NO FIREBASE PARA O USUÁRIO
+                //Salvar no Firebase
+                for (PerguntaDepressaoCat perguntaDepressaoCat : questDepressao)
+                    refRespQuestDepressao.child(androidId).child(String.valueOf(perguntaDepressaoCat.getId()))
+                            .setValue(perguntaDepressaoCat).addOnSuccessListener(aVoid -> Log.i("#SALVAR QUESTDEPRESSAOCAT", "OK"));
 
-            //SALVA O QUESTSINDROMEBURNOUT SEM RESPOSTA COMPLETO NO FIREBASE PARA O USUÁRIO
-            //Salvar no Firebase
-            for (PerguntaBurnout perguntaBurnout : questSindromeBurnout)
-                refRespQuestSindromeBurnout.child(androidId).child(String.valueOf(perguntaBurnout.getId()))
-                        .setValue(perguntaBurnout).addOnSuccessListener(aVoid -> Log.i("#SALVAR QUESTSINDROMEBURNOUT", "OK"));
+                //SALVA O QUESTSINDROMEBURNOUT SEM RESPOSTA COMPLETO NO FIREBASE PARA O USUÁRIO
+                //Salvar no Firebase
+                for (PerguntaBurnout perguntaBurnout : questSindromeBurnout)
+                    refRespQuestSindromeBurnout.child(androidId).child(String.valueOf(perguntaBurnout.getId()))
+                            .setValue(perguntaBurnout).addOnSuccessListener(aVoid -> Log.i("#SALVAR QUESTSINDROMEBURNOUT", "OK"));
 
-            //Salvar nas Preferências
-            Preferencias preferencias = new Preferencias(MainActivity.this);
-            preferencias.salvarDados(androidId, questionario, questSRQ20, questAnsiedade, questDepressao, questSindromeBurnout);
+                //Salvar nas Preferências
+                Preferencias preferencias = new Preferencias(MainActivity.this);
+                preferencias.salvarDados(androidId, questionario, questSRQ20, questAnsiedade, questDepressao, questSindromeBurnout);
+            }
+        } catch (Exception e) {
+            msg("Erro: " + e.getLocalizedMessage() + ". Consulte o suporte!");
+            e.printStackTrace();
         }
 
         if (progressDialog.isShowing()) progressDialog.dismiss();
     }
 
     private void carregarPreferencias() {
-        progressDialog = new SpotsDialog(this, "Carregando...", R.style.dialogEmpregosAL);
-        progressDialog.setCancelable(false);
-        progressDialog.show();
-
         Preferencias preferencias = new Preferencias(MainActivity.this);
         if (preferencias.getIdUsuario() != null) idUsuario = preferencias.getIdUsuario();
 
@@ -168,22 +186,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void carregarComponentes() {
+        progressDialog = new SpotsDialog(this, "Carregando...", R.style.dialogEmpregosAL);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
         carregarListaQuestSQ20();
         carregarListaQuestAnsiedade();
         carregarListaQuestDepressao();
         carregarListaQuestSindromeBurnout();
 
-//        ArrayList<PerguntaDepressaoCat> listaDePerguntas = new ArrayList<>();
-//        listaDePerguntas.addAll(new Perguntas(this).todasCategoriasPergDepress());
-//
-//        for (int i = 0; i < listaDePerguntas.size(); i++) {
-//            PerguntaDepressaoCat pdc = listaDePerguntas.get(i);
-//
-//            pdc.setPerguntasDeDepressao(new Perguntas(this).perguntaDepressaoPorCat(pdc.getId()));
-//            listaDePerguntas.set(i, pdc);
-//
-//            refListQuestDepressao.child(String.valueOf(pdc.getId())).setValue(pdc);
-//        }
+        if (progressDialog.isShowing()) progressDialog.dismiss();
+
+        //        ArrayList<PerguntaDepressaoCat> listaDePerguntas = new ArrayList<>();
+        //        listaDePerguntas.addAll(new Perguntas(this).todasCategoriasPergDepress());
+        //
+        //        for (int i = 0; i < listaDePerguntas.size(); i++) {
+        //            PerguntaDepressaoCat pdc = listaDePerguntas.get(i);
+        //
+        //            pdc.setPerguntasDeDepressao(new Perguntas(this).perguntaDepressaoPorCat(pdc.getId()));
+        //            listaDePerguntas.set(i, pdc);
+        //
+        //            refListQuestDepressao.child(String.valueOf(pdc.getId())).setValue(pdc);
+        //        }
     }
 
     private void carregarListaQuestSindromeBurnout() {

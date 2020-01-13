@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -47,13 +48,18 @@ public class QuestSQR20 extends AppCompatActivity {
     public void avancarSaudeMental(View view) {
         List<Pergunta> resultadosSQR20 = new ArrayList<>(PerguntaAdapter.resultados);
 
-        salvarFirebase(resultadosSQR20);
-        if (temSofrimentoMental(resultadosSQR20)) {
-            Intent intent = new Intent(this, SaudeMentalRuim.class);
-            startActivity(intent);
-        } else {
-            Intent intent = new Intent(this, SaudeMentalBoa.class);
-            startActivity(intent);
+        try {
+            salvarFirebase(resultadosSQR20);
+            if (temSofrimentoMental(resultadosSQR20)) {
+                Intent intent = new Intent(this, SaudeMentalRuim.class);
+                startActivity(intent);
+            } else {
+                Intent intent = new Intent(this, SaudeMentalBoa.class);
+                startActivity(intent);
+            }
+        } catch (Exception e) {
+            msg("Erro: " + e.getLocalizedMessage() + ". Consulte o suporte!");
+            e.printStackTrace();
         }
     }
 
@@ -82,6 +88,10 @@ public class QuestSQR20 extends AppCompatActivity {
         }
 
         return qtdSim >= 7;
+    }
+
+    private void msg(String texto) {
+        Toast.makeText(getApplicationContext(), texto, Toast.LENGTH_SHORT).show();
     }
 
     public void carregarComponentes() {
