@@ -14,7 +14,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
+        <activity android:name=".telas.Administrador"></activity>
         <activity android:name=".telas.CadastroFase4" />
         <activity android:name=".telas.CadastroFase3" />
         <activity android:name=".telas.InformarCondicaoActivity" />
@@ -28,6 +28,12 @@
         <activity android:name=".telas.Resultado" />
         <activity android:name=".telas.QuestSQR20" />
         <activity android:name=".telas.VamosLa" />
+        <activity android:name=".telas.CadastroInicio" />
+        <activity android:name=".telas.CadastroFase1" />
+        <activity
+            android:name=".telas.LoginActivity"
+            android:label="@string/app_name"
+            android:theme="@style/NoActionBarPersonalizado" />
         <activity android:name=".telas.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -35,8 +41,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".telas.CadastroInicio" />
-        <activity android:name=".telas.CadastroFase1" />
     </application>
 
 </manifest>

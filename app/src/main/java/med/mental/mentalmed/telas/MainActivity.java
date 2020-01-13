@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -31,6 +32,7 @@ import med.mental.mentalmed.model.Questionario;
 public class MainActivity extends AppCompatActivity {
 
     private SpotsDialog progressDialog;
+    private TextView tv_administrador;
 
     private DatabaseReference refConenexao = ConfiguracaoFirebase.getFirebase().child(".info/connected");
 
@@ -112,6 +114,11 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public void abrirLogin() {
+        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        startActivity(intent);
+    }
+
     private void criarPreferencias() {
         try {
             if (questionario == null) {
@@ -189,6 +196,9 @@ public class MainActivity extends AppCompatActivity {
         progressDialog = new SpotsDialog(this, "Carregando...", R.style.dialogEmpregosAL);
         progressDialog.setCancelable(false);
         progressDialog.show();
+
+        tv_administrador = findViewById(R.id.tv_administrador);
+        tv_administrador.setOnClickListener(v -> abrirLogin());
 
         carregarListaQuestSQ20();
         carregarListaQuestAnsiedade();

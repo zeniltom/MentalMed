@@ -15,4 +15,24 @@
         <item name="DialogSpotCount">8</item>
     </style>
 
+    <style name="DrawerArrowStyle" parent="@style/Widget.AppCompat.DrawerArrowToggle">
+        <item name="spinBars">true</item>
+        <item name="color">@color/branco</item>
+    </style>
+
+    <style name="NoActionBarPersonalizado" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <!--        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>-->
+        <item name="colorAccent">@color/colorPrimary</item>
+        <item name="titleTextColor">@color/branco</item>
+        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
+    </style>
+
+    <style name="dialogMentalMed" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="DialogTitleAppearance">@android:style/TextAppearance.Large</item>
+        <item name="DialogSpotColor">@color/colorPrimaryDark</item>
+        <item name="DialogSpotCount">8</item>
+    </style>
+
 </resources>

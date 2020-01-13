@@ -20,6 +20,10 @@
     <string name="eficacia_profissional">Eficácia Profissional</string>
     <string name="descrenca">Descrença</string>
     <string name="exaustao_emocional">Exaustão Emocional</string>
+    <string name="botao_logar">Login</string>
+    <string name="texto_email">E-mail</string>
+    <string name="texto_senha">Senha</string>
+    <string name="item_sair">Sair</string>
 
     <string-array name="perguntas">
         <item>01) Você têm dores de cabeça fequente?</item>
