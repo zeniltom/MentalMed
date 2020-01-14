@@ -49,7 +49,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingRight="10dp"
-                    android:text="Feminino"
+                    android:text="@string/feminino"
                     android:textSize="16sp" />
 
                 <RadioButton
@@ -57,7 +57,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingRight="10dp"
-                    android:text="Masculino"
+                    android:text="@string/masculino"
                     android:textSize="16sp" />
 
                 <RadioButton
@@ -65,7 +65,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingRight="10dp"
-                    android:text="LGBT"
+                    android:text="@string/lgbt"
                     android:textSize="16sp" />
             </RadioGroup>
 

@@ -32,26 +32,25 @@ import med.mental.mentalmed.model.Questionario;
 public class MainActivity extends AppCompatActivity {
 
     private SpotsDialog progressDialog;
-    private TextView tv_administrador;
 
-    private DatabaseReference refConenexao = ConfiguracaoFirebase.getFirebase().child(".info/connected");
+    private final DatabaseReference refConenexao = ConfiguracaoFirebase.getFirebase().child(".info/connected");
 
-    private DatabaseReference refRespQuestionario = ConfiguracaoFirebase.getFirebase().child("questionario");
-    private DatabaseReference refRespQuestSQR20 = ConfiguracaoFirebase.getFirebase().child("questionarioSQ20");
-    private DatabaseReference refRespQuestAnsiedade = ConfiguracaoFirebase.getFirebase().child("questionarioAnsiedade");
-    private DatabaseReference refRespQuestDepressao = ConfiguracaoFirebase.getFirebase().child("questionarioDepressao");
-    private DatabaseReference refRespQuestSindromeBurnout = ConfiguracaoFirebase.getFirebase().child("questionarioSindromeBurnout");
+    private final DatabaseReference refRespQuestionario = ConfiguracaoFirebase.getFirebase().child("questionario");
+    private final DatabaseReference refRespQuestSQR20 = ConfiguracaoFirebase.getFirebase().child("questionarioSQ20");
+    private final DatabaseReference refRespQuestAnsiedade = ConfiguracaoFirebase.getFirebase().child("questionarioAnsiedade");
+    private final DatabaseReference refRespQuestDepressao = ConfiguracaoFirebase.getFirebase().child("questionarioDepressao");
+    private final DatabaseReference refRespQuestSindromeBurnout = ConfiguracaoFirebase.getFirebase().child("questionarioSindromeBurnout");
 
-    private DatabaseReference refListQuestSQR20 = ConfiguracaoFirebase.getFirebase().child("perguntasSQR20");
-    private DatabaseReference refListQuestAnsiedade = ConfiguracaoFirebase.getFirebase().child("perguntasAnsiedade");
-    private DatabaseReference refListQuestDepressao = ConfiguracaoFirebase.getFirebase().child("perguntasDepressao");
-    private DatabaseReference refListQuestSindromeBurnout = ConfiguracaoFirebase.getFirebase().child("perguntasSindromeBurnout");
+    private final DatabaseReference refListQuestSQR20 = ConfiguracaoFirebase.getFirebase().child("perguntasSQR20");
+    private final DatabaseReference refListQuestAnsiedade = ConfiguracaoFirebase.getFirebase().child("perguntasAnsiedade");
+    private final DatabaseReference refListQuestDepressao = ConfiguracaoFirebase.getFirebase().child("perguntasDepressao");
+    private final DatabaseReference refListQuestSindromeBurnout = ConfiguracaoFirebase.getFirebase().child("perguntasSindromeBurnout");
 
     private Questionario questionario;
-    private List<Pergunta> questSRQ20 = new ArrayList<>();
-    private List<PerguntaAnsiedade> questAnsiedade = new ArrayList<>();
-    private List<PerguntaDepressaoCat> questDepressao = new ArrayList<>();
-    private List<PerguntaBurnout> questSindromeBurnout = new ArrayList<>();
+    private final List<Pergunta> questSRQ20 = new ArrayList<>();
+    private final List<PerguntaAnsiedade> questAnsiedade = new ArrayList<>();
+    private final List<PerguntaDepressaoCat> questDepressao = new ArrayList<>();
+    private final List<PerguntaBurnout> questSindromeBurnout = new ArrayList<>();
 
     private String idUsuario = "";
     private String androidId = "";
@@ -197,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
         progressDialog.setCancelable(false);
         progressDialog.show();
 
-        tv_administrador = findViewById(R.id.tv_administrador);
+        TextView tv_administrador = findViewById(R.id.tv_administrador);
         tv_administrador.setOnClickListener(v -> abrirLogin());
 
         carregarListaQuestSQ20();

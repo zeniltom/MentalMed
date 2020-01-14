@@ -16,14 +16,14 @@ import med.mental.mentalmed.model.Questionario;
 
 public class Preferencias {
 
-    private SharedPreferences preferences;
-    private SharedPreferences.Editor editor;
-    private String CHAVE_IDUSUARIO = "identificadorUsuario";
-    private String CHAVE_QUESTIONARIO = "questionario";
-    private String CHAVE_QUESTSQR20 = "questsqr20";
-    private String CHAVE_QUESTANSIEDADE = "questansiedade";
-    private String CHAVE_QUESTDEPRESSAO = "questdepressao";
-    private String CHAVE_QUESTSINDROMEBURNOUT = "questsindromeburnout";
+    private final SharedPreferences preferences;
+    private final SharedPreferences.Editor editor;
+    private final String CHAVE_IDUSUARIO = "identificadorUsuario";
+    private final String CHAVE_QUESTIONARIO = "questionario";
+    private final String CHAVE_QUESTSQR20 = "questsqr20";
+    private final String CHAVE_QUESTANSIEDADE = "questansiedade";
+    private final String CHAVE_QUESTDEPRESSAO = "questdepressao";
+    private final String CHAVE_QUESTSINDROMEBURNOUT = "questsindromeburnout";
 
     private Gson gson;
 
@@ -37,7 +37,7 @@ public class Preferencias {
 
     public void salvarDados(String idUsuario, Object questionario, Object questSRQ20, Object questAnsiedade, Object questDepressao, Object questSindromeBurnout) {
         gson = new Gson();
-        String resultado = "";
+        String resultado;
 
         String questionarioJson = gson.toJson(questionario);
         String questSRQ20Json = gson.toJson(questSRQ20);

@@ -23,7 +23,7 @@ public class PerguntaSindromeBurnoutAdapter extends BaseAdapter {
     private final List<PerguntaBurnout> questoes;
     private final LayoutInflater inflater;
     public static ArrayList<PerguntaBurnout> resultados;
-    private Context context;
+    private final Context context;
 
     public PerguntaSindromeBurnoutAdapter(Context context, List<PerguntaBurnout> questionsList) {
         this.questoes = questionsList;

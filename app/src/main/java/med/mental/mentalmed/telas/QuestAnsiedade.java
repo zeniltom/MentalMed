@@ -33,7 +33,7 @@ public class QuestAnsiedade extends AppCompatActivity {
     private final List<PerguntaAnsiedade> listaDePerguntas = new ArrayList<>();
     private PerguntaAnsiedadeAdapter adapter;
 
-    private DatabaseReference referenciaQuestAnsiedade = ConfiguracaoFirebase.getFirebase().child("questionarioAnsiedade");
+    private final DatabaseReference referenciaQuestAnsiedade = ConfiguracaoFirebase.getFirebase().child("questionarioAnsiedade");
     private String idUsuario = "";
 
     @Override

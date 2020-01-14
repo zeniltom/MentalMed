@@ -23,7 +23,7 @@ public class SaudeMentalBoa extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_saude_mental_boa);
 
-        ImageView bt_img_saude_ruim = findViewById(R.id.bt_img_saude_ruim);
+        ImageView bt_img_saude_ruim = findViewById(R.id.bt_img_saude_boa);
 
         bt_img_saude_ruim.setOnClickListener(view -> abrirIndicacao());
 

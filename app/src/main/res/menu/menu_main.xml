@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/item_sair"
+        android:icon="@drawable/ic_power_settings_new_black_24dp"
         android:orderInCategory="500"
         android:title="@string/item_sair"
         app:showAsAction="always" />

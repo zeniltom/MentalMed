@@ -33,7 +33,7 @@ public class QuestSQR20 extends AppCompatActivity {
     private final List<Pergunta> listaDePerguntas = new ArrayList<>();
     private PerguntaAdapter adapter;
 
-    private DatabaseReference referenciaQuestSQR20 = ConfiguracaoFirebase.getFirebase().child("questionarioSQ20");
+    private final DatabaseReference referenciaQuestSQR20 = ConfiguracaoFirebase.getFirebase().child("questionarioSQ20");
     private String idUsuario = "";
 
     @Override
@@ -94,7 +94,7 @@ public class QuestSQR20 extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), texto, Toast.LENGTH_SHORT).show();
     }
 
-    public void carregarComponentes() {
+    private void carregarComponentes() {
         progressDialog = new SpotsDialog(this, "Carregando...", R.style.dialogEmpregosAL);
         progressDialog.setCancelable(false);
         progressDialog.show();
@@ -102,7 +102,7 @@ public class QuestSQR20 extends AppCompatActivity {
         lista_perguntas = findViewById(R.id.lista_perguntas);
     }
 
-    public void carregarPreferencias() {
+    private void carregarPreferencias() {
         Preferencias preferencias = new Preferencias(QuestSQR20.this);
         if (preferencias.getIdUsuario() != null) idUsuario = preferencias.getIdUsuario();
 

@@ -7,7 +7,7 @@
     tools:context=".telas.SaudeMentalBoa">
 
     <ImageView
-        android:id="@+id/bt_img_saude_ruim"
+        android:id="@+id/bt_img_saude_boa"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="32dp"
@@ -16,6 +16,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView4"
+        android:contentDescription="@string/saude_boa"
         app:srcCompat="@drawable/cerebro" />
 
     <TextView

@@ -53,7 +53,7 @@ public class CadastroFase1 extends AppCompatActivity {
     private Button bt_proximo_fases;
     private SpotsDialog progressDialog;
 
-    private DatabaseReference referenciaQuestionario = ConfiguracaoFirebase.getFirebase().child("questionario");
+    private final DatabaseReference referenciaQuestionario = ConfiguracaoFirebase.getFirebase().child("questionario");
     private Questionario questionario = new Questionario();
     private String idUsuario = "";
 

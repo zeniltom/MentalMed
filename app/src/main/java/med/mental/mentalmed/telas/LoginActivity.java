@@ -85,7 +85,7 @@ public class LoginActivity extends AppCompatActivity {
                 task -> {
                     if (task.isSuccessful()) {
 
-                        final String id = task.getResult().getUser().getUid();
+                        final String id = Objects.requireNonNull(Objects.requireNonNull(task.getResult()).getUser()).getUid();
 
                         refUsuario = ConfiguracaoFirebase.getFirebase()
                                 .child("usuarios")

@@ -16,6 +16,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 import dmax.dialog.SpotsDialog;
 import med.mental.mentalmed.R;
@@ -32,13 +33,13 @@ public class InformarCondicaoActivity extends AppCompatActivity {
     private TextView tv_nv_depressao;
     private TextView tv_nv_sindrome_b;
 
-    private List<PerguntaAnsiedade> resultadosQuestAnsiedade = new ArrayList<>();
-    private List<PerguntaDepressaoCat> resultadosQuestDepressao = new ArrayList<>();
-    private List<PerguntaBurnout> resultadosQuestSindromeBurnout = new ArrayList<>();
+    private final List<PerguntaAnsiedade> resultadosQuestAnsiedade = new ArrayList<>();
+    private final List<PerguntaDepressaoCat> resultadosQuestDepressao = new ArrayList<>();
+    private final List<PerguntaBurnout> resultadosQuestSindromeBurnout = new ArrayList<>();
 
-    private DatabaseReference refQuestAnsiedade = ConfiguracaoFirebase.getFirebase().child("questionarioAnsiedade");
-    private DatabaseReference refQuestDepressao = ConfiguracaoFirebase.getFirebase().child("questionarioDepressao");
-    private DatabaseReference refQuestSindromeBurnout = ConfiguracaoFirebase.getFirebase().child("questionarioSindromeBurnout");
+    private final DatabaseReference refQuestAnsiedade = ConfiguracaoFirebase.getFirebase().child("questionarioAnsiedade");
+    private final DatabaseReference refQuestDepressao = ConfiguracaoFirebase.getFirebase().child("questionarioDepressao");
+    private final DatabaseReference refQuestSindromeBurnout = ConfiguracaoFirebase.getFirebase().child("questionarioSindromeBurnout");
 
     private String idUsuario = "";
 
@@ -48,7 +49,7 @@ public class InformarCondicaoActivity extends AppCompatActivity {
     private String nivelDepressao;
     private int resultadosDepressao;
 
-    HashMap<String, Float> resultadosSindromeB;
+    private HashMap<String, Float> resultadosSindromeB;
     private String resultadosSindromeBurnout;
 
     @Override
@@ -64,7 +65,7 @@ public class InformarCondicaoActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), texto, Toast.LENGTH_SHORT).show();
     }
 
-    public void carregarComponentes() {
+    private void carregarComponentes() {
         progressDialog = new SpotsDialog(this, "Carregando...", R.style.dialogEmpregosAL);
         progressDialog.setCancelable(false);
         progressDialog.show();
@@ -74,7 +75,7 @@ public class InformarCondicaoActivity extends AppCompatActivity {
         tv_nv_sindrome_b = findViewById(R.id.tv_nv_sindrome_b);
     }
 
-    public void carregarPreferencias() {
+    private void carregarPreferencias() {
         try {
             Preferencias preferencias = new Preferencias(InformarCondicaoActivity.this);
             if (preferencias.getIdUsuario() != null) idUsuario = preferencias.getIdUsuario();
@@ -163,9 +164,10 @@ public class InformarCondicaoActivity extends AppCompatActivity {
                 if (progressDialog.isShowing()) progressDialog.dismiss();
 
                 resultadosSindromeB = verificarResultadosSindrome(resultadosQuestSindromeBurnout);
-                resultadosSindromeBurnout = "Exaustão Emocional: " + (resultadosSindromeB.get("exaustaoEmocional") > 3 ? "POSSUE EXAUSTÃO EMOCIONAL" : "NORMAL")
-                        + "\nDescrença: " + (resultadosSindromeB.get("descreca") > 3 ? "POSSUE DESCRENÇA" : "NORMAL")
-                        + "\nEficácia Profissional: " + (resultadosSindromeB.get("eficaciaProfissional") < 2 ? "NÃO É EFICIENTE PROFISSIONALMENTE" : "NORMAL");
+                resultadosSindromeBurnout =
+                        "Exaustão Emocional: " + (Objects.requireNonNull(resultadosSindromeB.get("exaustaoEmocional")) > 3 ? "POSSUE EXAUSTÃO EMOCIONAL" : "NORMAL")
+                                + "\nDescrença: " + (Objects.requireNonNull(resultadosSindromeB.get("descreca")) > 3 ? "POSSUE DESCRENÇA" : "NORMAL")
+                                + "\nEficácia Profissional: " + (Objects.requireNonNull(resultadosSindromeB.get("eficaciaProfissional")) < 2 ? "NÃO É EFICIENTE PROFISSIONALMENTE" : "NORMAL");
 
                 tv_nv_sindrome_b.setText(resultadosSindromeBurnout);
             }
@@ -256,9 +258,9 @@ public class InformarCondicaoActivity extends AppCompatActivity {
         resultados.put("descreca", calcularDescrenca(resultadosQuestSindromeBurnout));
         resultados.put("eficaciaProfissional", calcularEficaciaProfissional(resultadosQuestSindromeBurnout));
 
-        Log.i("#EXAUSTÃO EMOCIONAL", resultados.get("exaustaoEmocional") > 3 ? "POSSUE EXAUSTÃO EMOCIONAL" : "NORMAL");
-        Log.i("#DESCRENÇA", resultados.get("descreca") > 3 ? "POSSUE DESCRENÇA" : "NORMAL");
-        Log.i("#EFICÁCIA PROFISSIONAL", resultados.get("eficaciaProfissional") < 2 ? "NÃO É EFICIENTE PROFISSIONALMENTE" : "NORMAL");
+        Log.i("#EXAUSTÃO EMOCIONAL", Objects.requireNonNull(resultados.get("exaustaoEmocional")) > 3 ? "POSSUE EXAUSTÃO EMOCIONAL" : "NORMAL");
+        Log.i("#DESCRENÇA", Objects.requireNonNull(resultados.get("descreca")) > 3 ? "POSSUE DESCRENÇA" : "NORMAL");
+        Log.i("#EFICÁCIA PROFISSIONAL", Objects.requireNonNull(resultados.get("eficaciaProfissional")) < 2 ? "NÃO É EFICIENTE PROFISSIONALMENTE" : "NORMAL");
 
         return resultados;
     }
@@ -268,7 +270,7 @@ public class InformarCondicaoActivity extends AppCompatActivity {
         int qtdItens = 1;
 
         for (int i = 0; i < lista.size(); i++) {
-            if (lista.get(i).isMarcada() && i > 0 && i < 6) {
+            if (lista.get(i).isMarcada() && lista.get(i).getCategoriaPergunta().equals("exaustao_emocional")) {
                 resultadoExaustaoEmocional = resultadoExaustaoEmocional + lista.get(i).getResposta();
                 qtdItens++;
             }
@@ -282,7 +284,7 @@ public class InformarCondicaoActivity extends AppCompatActivity {
         int qtdItens = 1;
 
         for (int i = 0; i < lista.size(); i++) {
-            if (lista.get(i).isMarcada() && i > 7 && i < 12) {
+            if (lista.get(i).isMarcada() && lista.get(i).getCategoriaPergunta().equals("descrenca")) {
                 resultadoDescrenca = resultadoDescrenca + lista.get(i).getResposta();
                 qtdItens++;
             }
@@ -296,7 +298,7 @@ public class InformarCondicaoActivity extends AppCompatActivity {
         int qtdItens = 1;
 
         for (int i = 0; i < lista.size(); i++) {
-            if (lista.get(i).isMarcada() && i > 12 && i < 17) {
+            if (lista.get(i).isMarcada() && lista.get(i).getCategoriaPergunta().equals("eficacia_profissional")) {
                 resultadoEficaciaProfissional = resultadoEficaciaProfissional + lista.get(i).getResposta();
                 qtdItens++;
             }

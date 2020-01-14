@@ -24,6 +24,17 @@
     <string name="texto_email">E-mail</string>
     <string name="texto_senha">Senha</string>
     <string name="item_sair">Sair</string>
+    <string name="masculino">Masculino</string>
+    <string name="feminino">Feminino</string>
+    <string name="lgbt">LGBT</string>
+    <string name="ansiedade_leve">Ansiedade leve</string>
+    <string name="depressao_leve">Depressão leve</string>
+    <string name="depressao_moderada">Depressão moderada</string>
+    <string name="depressao_grave">Depressão grave</string>
+    <string name="ansiedade_grave">Ansiedade grave</string>
+    <string name="ansiedade_moderada">Ansiedade moderada</string>
+    <string name="saude_ruim">Saúde Ruim</string>
+    <string name="saude_boa">Saúde Boa</string>
 
     <string-array name="perguntas">
         <item>01) Você têm dores de cabeça fequente?</item>
