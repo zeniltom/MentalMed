@@ -7,7 +7,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,6 +25,7 @@ import med.mental.mentalmed.R;
 import med.mental.mentalmed.config.ConfiguracaoFirebase;
 import med.mental.mentalmed.config.Preferencias;
 import med.mental.mentalmed.model.Questionario;
+import med.mental.mentalmed.util.Util;
 
 public class CadastroFase2 extends AppCompatActivity {
 
@@ -68,7 +68,7 @@ public class CadastroFase2 extends AppCompatActivity {
                 startActivity(intent);
             }
         } catch (Exception e) {
-            msg("Erro: " + e.getLocalizedMessage() + ". Consulte o suporte!");
+            Util.msg(this, "Erro: " + e.getLocalizedMessage() + ". Consulte o suporte!");
             e.printStackTrace();
         }
     }
@@ -107,21 +107,17 @@ public class CadastroFase2 extends AppCompatActivity {
         boolean resultado = true;
 
         if (questionario.getSemestreInicioGraduacao() == 0) {
-            msg("Prencha o semestre que iniciou a graduação");
+            Util.msg(this, "Prencha o semestre que iniciou a graduação");
             resultado = false;
         } else if (questionario.getPeriodoAtual() == 0) {
-            msg("Prencha o período atual da sua graduação");
+            Util.msg(this, "Prencha o período atual da sua graduação");
             resultado = false;
         } else if (questionario.getHorasEstudoDiarios() == 0) {
-            msg("Informe a quantidade de horas que estuda diariamente");
+            Util.msg(this, "Informe a quantidade de horas que estuda diariamente");
             resultado = false;
         }
 
         return resultado;
-    }
-
-    private void msg(String texto) {
-        Toast.makeText(getApplicationContext(), texto, Toast.LENGTH_SHORT).show();
     }
 
     private void carregarComponentes() {

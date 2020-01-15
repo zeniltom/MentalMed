@@ -37,16 +37,6 @@ import med.mental.mentalmed.model.Usuario;
 
 public class Administrador extends AppCompatActivity {
 
-    private final DatabaseReference refUsuario = ConfiguracaoFirebase.getFirebase().child("usuarios");
-    private final DatabaseReference refQuestionario = ConfiguracaoFirebase.getFirebase().child("questionario");
-    private final DatabaseReference refQuestSQR20 = ConfiguracaoFirebase.getFirebase().child("questionarioSQ20");
-    private final DatabaseReference refQuestAnsiedade = ConfiguracaoFirebase.getFirebase().child("questionarioAnsiedade");
-    private final DatabaseReference refQuestDepressao = ConfiguracaoFirebase.getFirebase().child("questionarioDepressao");
-    private final DatabaseReference refQuestSindromeB = ConfiguracaoFirebase.getFirebase().child("questionarioSindromeBurnout");
-    private final List<Pergunta> resultadosQuestSQR20 = new ArrayList<>();
-    private final List<PerguntaAnsiedade> resultadosQuestAnsiedade = new ArrayList<>();
-    private final List<PerguntaDepressaoCat> resultadosQuestDepressao = new ArrayList<>();
-    private final List<PerguntaBurnout> resultadosQuestSindromeBurnout = new ArrayList<>();
     private SpotsDialog progressDialog;
     private Toolbar toolbar;
     private TextView tv_qtd_usuarios;
@@ -58,8 +48,6 @@ public class Administrador extends AppCompatActivity {
     private TextView tv_qtd_sem_comp;
     private TextView tv_media_semestre_estudam;
     private TextView tv_qtd_com_sofrimento;
-
-    private FirebaseAuth auth;
     private TextView tv_qtd_sem_sofrimento;
     private TextView tv_qtd_com_ansiedade;
     private TextView tv_qtd_ansiedade_leve;
@@ -70,15 +58,30 @@ public class Administrador extends AppCompatActivity {
     private TextView tv_qtd_depressao_moderada;
     private TextView tv_qtd_depressao_grave;
     private TextView tv_qtd_com_sindromeb;
-    private int resultadosAnsiedade;
-    private int resultadosDepressao;
-    private HashMap<String, Float> resultadosFinais;
+
+    private FirebaseAuth auth;
+
+    private final DatabaseReference refUsuario = ConfiguracaoFirebase.getFirebase().child("usuarios");
+    private final DatabaseReference refQuestionario = ConfiguracaoFirebase.getFirebase().child("questionario");
+    private final DatabaseReference refQuestSQR20 = ConfiguracaoFirebase.getFirebase().child("questionarioSQ20");
+    private final DatabaseReference refQuestAnsiedade = ConfiguracaoFirebase.getFirebase().child("questionarioAnsiedade");
+    private final DatabaseReference refQuestDepressao = ConfiguracaoFirebase.getFirebase().child("questionarioDepressao");
+    private final DatabaseReference refQuestSindromeB = ConfiguracaoFirebase.getFirebase().child("questionarioSindromeBurnout");
+
+    private final List<Pergunta> resultadosQuestSQR20 = new ArrayList<>();
+    private final List<PerguntaAnsiedade> resultadosQuestAnsiedade = new ArrayList<>();
+    private final List<PerguntaDepressaoCat> resultadosQuestDepressao = new ArrayList<>();
+    private final List<PerguntaBurnout> resultadosQuestSindromeBurnout = new ArrayList<>();
+
+    private Usuario usuario = new Usuario();
+    private String idUsuario = "";
 
     private String nivelAnsiedade;
     private String nivelDepressao;
 
-    private Usuario usuario = new Usuario();
-    private String idUsuario = "";
+    private int resultadosAnsiedade;
+    private int resultadosDepressao;
+    private HashMap<String, Float> resultadosFinais;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -257,7 +260,6 @@ public class Administrador extends AppCompatActivity {
         refQuestAnsiedade.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                resultadosQuestAnsiedade.clear();
                 int qtdComAnsiedade = 0;
                 int qtdAnsiedadeLeve = 0;
                 int qtdAnsiedadeModerada = 0;
@@ -265,12 +267,13 @@ public class Administrador extends AppCompatActivity {
 
                 try {
                     for (DataSnapshot dados : dataSnapshot.getChildren()) {
+                        resultadosQuestAnsiedade.clear();
+
                         for (DataSnapshot d : dados.getChildren())
                             resultadosQuestAnsiedade.add(d.getValue(PerguntaAnsiedade.class));
 
                         resultadosAnsiedade = verificarResultadosAnsiedade(resultadosQuestAnsiedade);
                         nivelAnsiedade = nivelDeAnsiedade(resultadosAnsiedade);
-
                         if (nivelAnsiedade.equals("Ansiedade Leve")) qtdAnsiedadeLeve++;
                         if (nivelAnsiedade.equals("Ansiedade Moderada")) qtdAnsiedadeModerada++;
                         if (nivelAnsiedade.equals("Ansiedade Grave")) qtdAnsiedadeGrave++;
@@ -300,7 +303,6 @@ public class Administrador extends AppCompatActivity {
         refQuestDepressao.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                resultadosQuestDepressao.clear();
                 int qtdComAnsiedade = 0;
                 int qtdDepressaoLeve = 0;
                 int qtdDepressaoModerada = 0;
@@ -308,6 +310,8 @@ public class Administrador extends AppCompatActivity {
 
                 try {
                     for (DataSnapshot dados : dataSnapshot.getChildren()) {
+                        resultadosQuestDepressao.clear();
+
                         for (DataSnapshot d : dados.getChildren())
                             resultadosQuestDepressao.add(d.getValue(PerguntaDepressaoCat.class));
 

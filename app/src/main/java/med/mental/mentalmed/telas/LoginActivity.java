@@ -24,7 +24,6 @@ import java.util.Objects;
 
 import med.mental.mentalmed.R;
 import med.mental.mentalmed.config.ConfiguracaoFirebase;
-import med.mental.mentalmed.config.Preferencias;
 import med.mental.mentalmed.model.Usuario;
 import med.mental.mentalmed.util.Util;
 import studio.carbonylgroup.textfieldboxes.ExtendedEditText;
@@ -34,6 +33,7 @@ public class LoginActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private ExtendedEditText email;
     private ExtendedEditText senha;
+    private Button botaoLogar;
 
     private DatabaseReference refUsuario;
     private FirebaseAuth auth;
@@ -44,11 +44,15 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        verificarUsuarioLogado();
 
+        verificarUsuarioLogado();
+        carregarComponentes();
+    }
+
+    public void carregarComponentes() {
         email = findViewById(R.id.edit_login_email);
         senha = findViewById(R.id.edit_login_senha);
-        final Button botaoLogar = findViewById(R.id.bt_logar);
+        botaoLogar = findViewById(R.id.bt_logar);
 
         email.setOnEditorActionListener((textView, i, keyEvent) -> {
             if (i == EditorInfo.IME_ACTION_NEXT) email.requestFocus();
@@ -86,7 +90,6 @@ public class LoginActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
 
                         final String id = Objects.requireNonNull(Objects.requireNonNull(task.getResult()).getUser()).getUid();
-
                         refUsuario = ConfiguracaoFirebase.getFirebase()
                                 .child("usuarios")
                                 .child(id);
@@ -94,12 +97,9 @@ public class LoginActivity extends AppCompatActivity {
                         valueEventListenerUsuario = new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
                                 Usuario usuario = dataSnapshot.getValue(Usuario.class);
 
                                 if (usuario != null) {
-                                    Preferencias preferencias = new Preferencias(LoginActivity.this);
-
                                     abrirTelaAdministrador();
                                     progressDialog.dismiss();
                                 }

@@ -6,7 +6,6 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,6 +27,7 @@ import med.mental.mentalmed.model.PerguntaAnsiedade;
 import med.mental.mentalmed.model.PerguntaBurnout;
 import med.mental.mentalmed.model.PerguntaDepressaoCat;
 import med.mental.mentalmed.model.Questionario;
+import med.mental.mentalmed.util.Util;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
                     Intent intent = new Intent(MainActivity.this, CadastroInicio.class);
                     startActivity(intent);
 
-                } else msg("Sem conexão!");
+                } else Util.msg(getApplicationContext(), "Sem conexão!");
             }
 
             @Override
@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
                 refRespQuestionario.child(androidId).setValue(questionario)
                         .addOnSuccessListener(aVoid -> Log.i("#SALVAR QUESTIONARIO", "OK"))
                         .addOnFailureListener(e -> {
-                            msg("Erro ao salvar registros no Servidor! ERRO: " + e.getLocalizedMessage());
+                            Util.msg(this, "Erro ao salvar registros no Servidor! ERRO: " + e.getLocalizedMessage());
                             Log.i("#SALVAR QUESTIONARIO", "ERRO");
                         });
 
@@ -162,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
                 preferencias.salvarDados(androidId, questionario, questSRQ20, questAnsiedade, questDepressao, questSindromeBurnout);
             }
         } catch (Exception e) {
-            msg("Erro: " + e.getLocalizedMessage() + ". Consulte o suporte!");
+            Util.msg(this, "Erro: " + e.getLocalizedMessage() + ". Consulte o suporte!");
             e.printStackTrace();
         }
 
@@ -301,9 +301,5 @@ public class MainActivity extends AppCompatActivity {
 
             }
         };
-    }
-
-    private void msg(String texto) {
-        Toast.makeText(getApplicationContext(), texto, Toast.LENGTH_SHORT).show();
     }
 }

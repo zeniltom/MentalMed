@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,6 +23,7 @@ import med.mental.mentalmed.adapter.PerguntaAdapter;
 import med.mental.mentalmed.config.ConfiguracaoFirebase;
 import med.mental.mentalmed.config.Preferencias;
 import med.mental.mentalmed.model.Pergunta;
+import med.mental.mentalmed.util.Util;
 
 public class QuestSQR20 extends AppCompatActivity {
 
@@ -58,7 +58,7 @@ public class QuestSQR20 extends AppCompatActivity {
                 startActivity(intent);
             }
         } catch (Exception e) {
-            msg("Erro: " + e.getLocalizedMessage() + ". Consulte o suporte!");
+            Util.msg(this, "Erro: " + e.getLocalizedMessage() + ". Consulte o suporte!");
             e.printStackTrace();
         }
     }
@@ -88,10 +88,6 @@ public class QuestSQR20 extends AppCompatActivity {
         }
 
         return qtdSim >= 7;
-    }
-
-    private void msg(String texto) {
-        Toast.makeText(getApplicationContext(), texto, Toast.LENGTH_SHORT).show();
     }
 
     private void carregarComponentes() {

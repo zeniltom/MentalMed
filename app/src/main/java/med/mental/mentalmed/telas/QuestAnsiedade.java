@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,6 +23,7 @@ import med.mental.mentalmed.adapter.PerguntaAnsiedadeAdapter;
 import med.mental.mentalmed.config.ConfiguracaoFirebase;
 import med.mental.mentalmed.config.Preferencias;
 import med.mental.mentalmed.model.PerguntaAnsiedade;
+import med.mental.mentalmed.util.Util;
 
 public class QuestAnsiedade extends AppCompatActivity {
 
@@ -54,7 +54,7 @@ public class QuestAnsiedade extends AppCompatActivity {
             Intent intent = new Intent(this, CadastroFase3.class);
             startActivity(intent);
         } catch (Exception e) {
-            msg("Erro: " + e.getLocalizedMessage() + ". Consulte o suporte!");
+            Util.msg(this, "Erro: " + e.getLocalizedMessage() + ". Consulte o suporte!");
             e.printStackTrace();
         }
     }
@@ -69,10 +69,6 @@ public class QuestAnsiedade extends AppCompatActivity {
                 preferencias.salvarAnsiedade(resultadosQuestAnsiedade);
             });
         }
-    }
-
-    private void msg(String texto) {
-        Toast.makeText(getApplicationContext(), texto, Toast.LENGTH_SHORT).show();
     }
 
     private void carregarComponentes() {

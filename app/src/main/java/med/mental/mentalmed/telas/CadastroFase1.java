@@ -10,7 +10,6 @@ import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -32,6 +31,7 @@ import med.mental.mentalmed.model.ENMoradia;
 import med.mental.mentalmed.model.ENRaca;
 import med.mental.mentalmed.model.ENSexo;
 import med.mental.mentalmed.model.Questionario;
+import med.mental.mentalmed.util.Util;
 
 public class CadastroFase1 extends AppCompatActivity {
 
@@ -80,7 +80,7 @@ public class CadastroFase1 extends AppCompatActivity {
                 startActivity(intent);
             }
         } catch (Exception e) {
-            msg("Erro: " + e.getLocalizedMessage() + ". Consulte o suporte!");
+            Util.msg(this, "Erro: " + e.getLocalizedMessage() + ". Consulte o suporte!");
             e.printStackTrace();
         }
     }
@@ -117,27 +117,23 @@ public class CadastroFase1 extends AppCompatActivity {
         boolean resultado = true;
 
         if (questionario.getGenero() == null) {
-            msg("Escolha seu gênero");
+            Util.msg(this, "Escolha seu gênero");
             resultado = false;
         } else if (questionario.getSexo() == null) {
-            msg("Escolha seu sexo");
+            Util.msg(this, "Escolha seu sexo");
             resultado = false;
         } else if (questionario.getMoradia() == null) {
-            msg("Informe com quem mora");
+            Util.msg(this, "Informe com quem mora");
             resultado = false;
         } else if (questionario.getIdade() == 0) {
-            msg("Escolha sua idade");
+            Util.msg(this, "Escolha sua idade");
             resultado = false;
         } else if (questionario.getRaca().equals(ENRaca.SELECINE)) {
-            msg("Escolha sua raça");
+            Util.msg(this, "Escolha sua raça");
             resultado = false;
         }
 
         return resultado;
-    }
-
-    private void msg(String texto) {
-        Toast.makeText(getApplicationContext(), texto, Toast.LENGTH_SHORT).show();
     }
 
     private void carregarComponentes() {

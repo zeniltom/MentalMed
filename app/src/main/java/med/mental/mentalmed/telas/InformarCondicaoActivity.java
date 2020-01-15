@@ -3,7 +3,6 @@ package med.mental.mentalmed.telas;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,6 +24,7 @@ import med.mental.mentalmed.config.Preferencias;
 import med.mental.mentalmed.model.PerguntaAnsiedade;
 import med.mental.mentalmed.model.PerguntaBurnout;
 import med.mental.mentalmed.model.PerguntaDepressaoCat;
+import med.mental.mentalmed.util.Util;
 
 public class InformarCondicaoActivity extends AppCompatActivity {
 
@@ -61,10 +61,6 @@ public class InformarCondicaoActivity extends AppCompatActivity {
         carregarPreferencias();
     }
 
-    private void msg(String texto) {
-        Toast.makeText(getApplicationContext(), texto, Toast.LENGTH_SHORT).show();
-    }
-
     private void carregarComponentes() {
         progressDialog = new SpotsDialog(this, "Carregando...", R.style.dialogEmpregosAL);
         progressDialog.setCancelable(false);
@@ -88,7 +84,7 @@ public class InformarCondicaoActivity extends AppCompatActivity {
             Log.i("#NIVEL DEPRESSAO", String.valueOf(resultadosDepressao));
             Log.i("#NIVEL SINDROME BURNOUT", String.valueOf(resultadosSindromeB));
         } catch (Exception e) {
-            msg("Erro: " + e.getLocalizedMessage() + ". Consulte o suporte!");
+            Util.msg(this, "Erro: " + e.getLocalizedMessage() + ". Consulte o suporte!");
             e.printStackTrace();
         }
     }

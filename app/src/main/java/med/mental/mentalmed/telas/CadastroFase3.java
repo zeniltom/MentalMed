@@ -7,7 +7,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,6 +24,7 @@ import med.mental.mentalmed.R;
 import med.mental.mentalmed.config.ConfiguracaoFirebase;
 import med.mental.mentalmed.config.Preferencias;
 import med.mental.mentalmed.model.Questionario;
+import med.mental.mentalmed.util.Util;
 
 public class CadastroFase3 extends AppCompatActivity {
 
@@ -67,7 +67,7 @@ public class CadastroFase3 extends AppCompatActivity {
                 startActivity(intent);
             }
         } catch (Exception e) {
-            msg("Erro: " + e.getLocalizedMessage() + ". Consulte o suporte!");
+            Util.msg(this, "Erro: " + e.getLocalizedMessage() + ". Consulte o suporte!");
             e.printStackTrace();
         }
     }
@@ -112,15 +112,11 @@ public class CadastroFase3 extends AppCompatActivity {
         boolean resultado = true;
 
         if (questionario.getHorasLazerSemanalmente() == 0) {
-            msg("Preencha as Horas de lazer semanalmente");
+            Util.msg(this, "Preencha as Horas de lazer semanalmente");
             resultado = false;
         }
 
         return resultado;
-    }
-
-    private void msg(String texto) {
-        Toast.makeText(getApplicationContext(), texto, Toast.LENGTH_SHORT).show();
     }
 
     private void carregarComponentes() {
